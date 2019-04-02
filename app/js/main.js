@@ -13,6 +13,16 @@ export default class App {
         this.camera = new THREE.PerspectiveCamera(75, 4/3, 0.5, 500);
         // Place the camera at (0,0,100)
         this.camera.position.z = 100;
+
+        this.tracker = new TrackballControls(this.camera);
+        this.tracker.rotateSpeed = 2.0;
+        // Allow zoom and pan
+        this.tracker.noZoom = false;
+        this.tracker.noPan = false;
+
+        const lightOne = new THREE.DirectionalLight (0xFFFFFF, 1.0);
+        lightOne.position.set (10, 40, 100);
+        this.scene.add (lightOne);
     
         window.addEventListener('resize', () => this.resizeHandler());
         this.resizeHandler();
