@@ -2,10 +2,8 @@ import * as THREE from 'three';
 import TrackballControls from 'three-trackballcontrols';
 import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
-//import OBJLoader from 'three-obj-loader';
-//OBJLoader(THREE); 
-import './loaders/OBJLoader.js'
-
+import GLTFLoader from 'three-gltf-loader';
+//import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally? 
 
 export default class App {
   constructor() {
@@ -13,6 +11,7 @@ export default class App {
     // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({ canvas: c, antialias: true });
     this.scene = new THREE.Scene();
+    this.loader = new GLTFLoader();
 
     // Use perspective camera:
     //   Field of view: 75 degrees
@@ -49,43 +48,13 @@ export default class App {
     const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);
+ */
+    this.createCar();
+    //this.loadPoopingDog();
+    //this.loadDeer(); 
+    //this.loadGasCan(); 
+    //this.loadDog(); 
 
-    //loading in the deer, possibly
-    // instantiate a loader
-    /*var loader = new THREE.OBJLoader();
-
-    // load a resource
-    loader.load(
-      // resource URL
-      'models/Deer.obj',
-      // called when resource is loaded
-      function (object) {
-
-        scene.add(object);
-
-      },
-      // called when loading is in progresses
-      function (xhr) {
-
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-      },
-      // called when loading has errors
-      function (error) {
-
-        console.log('An error happened');
-
-      }
-    ); */
-    
-    this.loader = new OBJLoader(); 
-    this.loader.setPath('/app/js/models/');
-    this.loader.load('Deer.obj', function(object){
-        object.position.y -= 60; 
-        this.scene.add(object); 
-    }); 
-
-    //this.createCar();
 
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
 
@@ -98,23 +67,23 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    document.onkeydown = function(event) {
+    document.onkeydown = function (event) {
       switch (event.keyCode) {
-         case 37:
-              alert('Left key pressed');
-            break;
-         case 38:
-              alert('Up key pressed');
-            break;
-         case 39:
-              alert('Right key pressed');
-              //this.fltire.translateX(20); 
-            break;
-         case 40:
-              alert('Down key pressed');
-            break;
-         default:
-            break; 
+        case 37:
+          alert('Left key pressed');
+          break;
+        case 38:
+          alert('Up key pressed');
+          break;
+        case 39:
+          alert('Right key pressed');
+          //this.fltire.translateX(20); 
+          break;
+        case 40:
+          alert('Down key pressed');
+          break;
+        default:
+          break;
       }
     };
 
@@ -180,5 +149,88 @@ export default class App {
     this.bltire.translateZ(4);
     this.scene.add(this.bltire);
     //this.bltire.matrixAutoUpdate = false;
+  }
+
+  loadPoopingDog() {
+    this.loader.load(
+      'app/js/models/PoopingDog/scene.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
+        //gltf.scene.translateX(5); 
+        this.scene.add(gltf.scene);
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
+  }
+
+  loadDeer() {
+    this.loader.load(
+      'app/js/models/Buck/scene.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
+        //gltf.scene.translateX(5); 
+        this.scene.add(gltf.scene);
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
+  }
+
+  loadDog() {
+    this.loader.load(
+      'app/js/models/Dog/scene.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
+        //gltf.scene.translateX(5); 
+        /*gltf.scene.position.y -= 1000; 
+        gltf.scene.position.z -= 700; 
+        gltf.scene.position.x -= 400; */
+        this.scene.add(gltf.scene);
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
+  }
+
+  loadGasCan() {
+    this.loader.load(
+      'app/js/models/OldJerryCan/scene.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
+        //gltf.scene.translateX(5); 
+        this.scene.add(gltf.scene);
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
   }
 }
