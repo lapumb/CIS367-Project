@@ -36,13 +36,16 @@ export default class App {
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);
 
+    this.axesHelper = new THREE.AxesHelper(100);
+    this.scene.add(this.axesHelper);
+
     this.createCar();
 
     this.createRoad();
 
-    this.myCar.translateZ(150);
-    this.myCar.translateY(-20);
-    this.myCar.rotationY(THREE.Math.PI / 2)
+    this.myCar.translateZ(160);
+    this.myCar.translateY(-15);
+    this.rotateObject(this.myCar, 0, 90, 0);
 
 
     window.addEventListener('resize', () => this.resizeHandler());
@@ -101,6 +104,8 @@ export default class App {
     this.myCar = new Car();
     this.scene.add(this.myCar);
 
+    // changed this to true, it would'nt let me move or 
+    // rotate the car when it was false
     this.myCar.matrixAutoUpdate = true;
 
     //front right tire
@@ -130,5 +135,12 @@ export default class App {
     this.bltire.translateY(-5);
     this.bltire.translateZ(4);
     this.scene.add(this.bltire);
+  }
+
+  //rotates an object by the specified angle
+  rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
+    object.rotateX(THREE.Math.degToRad(degreeX));
+    object.rotateY(THREE.Math.degToRad(degreeY));
+    object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 }
