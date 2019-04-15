@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import TrackballControls from 'three-trackballcontrols';
 import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
+import Tree from './models/Tree.js'; 
 import GLTFLoader from 'three-gltf-loader';
 //import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally? 
 
@@ -49,6 +50,8 @@ export default class App {
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);
  */
+
+    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
     this.createCar();
     //this.loadPoopingDog();
     //this.loadDeer(); 
@@ -56,7 +59,6 @@ export default class App {
     //this.loadDog(); 
 
 
-    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
 
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
@@ -66,26 +68,42 @@ export default class App {
   render() {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
+    var count = 0; 
 
-    document.onkeydown = function (event) {
-      switch (event.keyCode) {
-        case 37:
-          alert('Left key pressed');
-          break;
-        case 38:
-          alert('Up key pressed');
-          break;
-        case 39:
-          alert('Right key pressed');
-          //this.fltire.translateX(20); 
-          break;
-        case 40:
-          alert('Down key pressed');
-          break;
-        default:
-          break;
-      }
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+      'use strict';
+  
+
+      document.addEventListener('keydown', event => {
+        const key = event.keyCode; 
+          if(key == 37) { //left arrow pressed
+            if(count < 1) {
+              this.leftTurn();  
+              count += 1; 
+            }
+          }
+          if(key == 39) { //right arrow pressed  
+            if(count < 1) {          
+              this.rightTurn(); 
+              count += 1; 
+            }
+          }
+      });
+      document.addEventListener('keyup', event => {
+        const key = event.keyCode; 
+        console.log("made it to keyup"); 
+        console.log("upkey code = " + key); 
+        if(key == 37) { //left arrow released
+          this.returnFromLeft(); 
+          count = 0; 
+        }
+
+        if(key == 39) { //right arrow released
+          this.returnFromRight();
+          count = 0; 
+        }
+    });
+  });
 
     //making tires spin
     /*
@@ -93,6 +111,7 @@ export default class App {
     this.brtire.matrix.multiply (this.rotZ1);
     this.frtire.matrix.multiply (this.rotZ1);
     this.fltire.matrix.multiply (this.rotZ1); */
+    //this.rotateWheels();
 
     requestAnimationFrame(() => this.render());
   }
@@ -232,5 +251,42 @@ export default class App {
         console.error('An error happened', error);
       },
     );
+  }
+
+  //called when left key is pressed, turns tires left
+  leftTurn() {
+    this.fltire.rotateY(16); 
+    this.frtire.rotateY(16); 
+  }
+
+  //returns front tires to original position when left key is released
+  returnFromLeft() {
+    this.fltire.rotateY(-16); 
+    this.frtire.rotateY(-16); 
+  }
+
+  //called when right key is pressed, turns tires right
+  rightTurn() {
+    this.fltire.rotateY(-16); 
+    this.frtire.rotateY(-16); 
+  }
+
+  //returns front tires to original position when right key is released
+  returnFromRight() {
+    this.fltire.rotateY(16); 
+    this.frtire.rotateY(16);
+  }
+
+  //rotating car wheels
+  rotateWheels() {
+    this.brtire.matrixAutoUpdate = false;
+    this.bltire.matrixAutoUpdate = false;
+    this.frtire.matrixAutoUpdate = false;
+    this.fltire.matrixAutoUpdate = false;
+
+    this.bltire.matrix.multiply (this.rotZ1);
+    this.brtire.matrix.multiply (this.rotZ1);
+    this.frtire.matrix.multiply (this.rotZ1);
+    this.fltire.matrix.multiply (this.rotZ1);
   }
 }
