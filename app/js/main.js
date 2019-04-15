@@ -10,8 +10,12 @@ export default class App {
   constructor() {
     const c = document.getElementById('mycanvas');
     // Enable antialias for smoother lines
-    this.renderer = new THREE.WebGLRenderer({ canvas: c, antialias: true });
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: c,
+      antialias: true
+    });
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x23a3a1);
     this.loader = new GLTFLoader();
 
     // Use perspective camera:
@@ -52,13 +56,21 @@ export default class App {
  */
 
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
-    this.createCar();
+    //this.createCar();
     //this.loadPoopingDog();
     //this.loadDeer(); 
     //this.loadGasCan(); 
     //this.loadDog(); 
 
+    this.createCar();
+    this.createRoad();
 
+    this.myCar.translateZ(160);
+    this.myCar.translateY(-15);
+    this.rotateObject(this.myCar, 0, 90, 0);
+
+    this.axesHelper = new THREE.AxesHelper(100);
+    this.scene.add(this.axesHelper);
 
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
@@ -94,7 +106,9 @@ export default class App {
     //adding body
     this.myCar = new Car();
     this.scene.add(this.myCar);
-    this.myCar.matrixAutoUpdate = false;
+    // changed this to true, it would'nt let me move or 
+    // rotate the car when it was false
+    this.myCar.matrixAutoUpdate = true;
 
     //front right tire
     this.frtire = new Wheel(8);
@@ -285,4 +299,33 @@ export default class App {
       });
     });
   }
-}
+
+    createRoad() {
+      /* ROAD */
+      var planeGeometry = {},
+        planeMaterial = {};
+  
+      const PLANE_WIDTH = 70,
+        PLANE_LENGTH = 500,
+        PADDING = PLANE_WIDTH / 5 * 2;
+  
+      planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
+  
+      planeMaterial = new THREE.MeshLambertMaterial({
+        color: 0x696969 //some random color for now
+      });
+  
+      this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      //rotate the plane so it looks like a straight, long road
+      this.plane.rotation.x = 1.65;
+      this.plane.receiveShadow = true;
+      this.plane.translateZ(10);
+      this.scene.add(this.plane);
+    }
+
+    rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
+      object.rotateX(THREE.Math.degToRad(degreeX));
+      object.rotateY(THREE.Math.degToRad(degreeY));
+      object.rotateZ(THREE.Math.degToRad(degreeZ));
+    }
+  }
