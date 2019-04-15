@@ -35,9 +35,9 @@ export default class App {
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);
 
-    this.createCar();
+    //this.createCar();
 
-    //this.createRoad();
+    this.createRoad();
 
 
     window.addEventListener('resize', () => this.resizeHandler());
@@ -69,11 +69,11 @@ export default class App {
 
   createRoad() {
     /* ROAD */
-    const plane = {};
+    //this.plane = {};
     var planeGeometry = {},
       planeMaterial = {};
 
-    var PLANE_WIDTH = 50,
+    const PLANE_WIDTH = 50,
       PLANE_LENGTH = 1000,
       PADDING = PLANE_WIDTH / 5 * 2;
 
@@ -83,10 +83,10 @@ export default class App {
       color: 0x78909C //some random color for now
     });
 
-    plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.receiveShadow = true;
+    this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    this.plane.receiveShadow = true;
 
-    this.scene.add(plane);
+    this.scene.add(this.plane);
 
   }
 
