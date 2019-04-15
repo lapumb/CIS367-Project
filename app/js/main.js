@@ -65,9 +65,7 @@ export default class App {
     this.createCar();
     this.createRoad();
 
-    this.myCar.translateZ(160);
-    this.myCar.translateY(-15);
-    this.rotateObject(this.myCar, 0, 90, 0);
+
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -105,7 +103,7 @@ export default class App {
   createCar() {
     //adding body
     this.myCar = new Car();
-    this.scene.add(this.myCar);
+    //this.scene.add(this.myCar);
     // changed this to true, it would'nt let me move or 
     // rotate the car when it was false
     this.myCar.matrixAutoUpdate = true;
@@ -115,7 +113,7 @@ export default class App {
     this.frtire.translateX(8);
     this.frtire.translateY(-5);
     this.frtire.translateZ(4);
-    this.scene.add(this.frtire);
+    //this.scene.add(this.frtire);
     //this.frtire.matrixAutoUpdate = false;
 
     //front left tire
@@ -123,7 +121,7 @@ export default class App {
     this.fltire.translateX(8);
     this.fltire.translateY(-5);
     this.fltire.translateZ(-4);
-    this.scene.add(this.fltire);
+    //this.scene.add(this.fltire);
     //this.fltire.matrixAutoUpdate = false;
 
     //back right tire
@@ -131,7 +129,7 @@ export default class App {
     this.brtire.translateX(-3);
     this.brtire.translateY(-5);
     this.brtire.translateZ(-4);
-    this.scene.add(this.brtire);
+    //this.scene.add(this.brtire);
     //this.brtire.matrixAutoUpdate = false;
 
     //back right tire
@@ -139,8 +137,23 @@ export default class App {
     this.bltire.translateX(-3);
     this.bltire.translateY(-5);
     this.bltire.translateZ(4);
-    this.scene.add(this.bltire);
+    //this.scene.add(this.bltire);
     //this.bltire.matrixAutoUpdate = false;
+
+    //added all car elements to a group so we can 
+    //move them all together with ease
+    this.carGroup = new THREE.Group(); 
+    this.carGroup.add(this.myCar); 
+    this.carGroup.add(this.fltire);
+    this.carGroup.add(this.frtire);
+    this.carGroup.add(this.bltire);
+    this.carGroup.add(this.brtire);    
+
+    this.carGroup.translateZ(160);
+    this.carGroup.translateY(-15);
+    this.rotateObject(this.carGroup, 0, 90, 0);
+
+    this.scene.add(this.carGroup);
   }
 
   loadPoopingDog() {
@@ -189,10 +202,6 @@ export default class App {
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5); 
-        /*gltf.scene.position.y -= 1000; 
-        gltf.scene.position.z -= 700; 
-        gltf.scene.position.x -= 400; */
         this.scene.add(gltf.scene);
       },
       (xhr) => {
@@ -255,7 +264,7 @@ export default class App {
     this.brtire.matrixAutoUpdate = false;
     this.bltire.matrixAutoUpdate = false;
     this.frtire.matrixAutoUpdate = false;
-    this.fltire.matrixAutoUpdate = false; 
+    this.fltire.matrixAutoUpdate = false;
 
     this.bltire.matrix.multiply(this.rotZ1);
     this.brtire.matrix.multiply(this.rotZ1);
@@ -263,9 +272,9 @@ export default class App {
     this.fltire.matrix.multiply(this.rotZ1);
   }
 
-  //handling key strokes, called in render()
+  //handling key strokes (left and right arrows, respectively), called in render()
   onArrowPressed() {
-    var count = 0; 
+    var count = 0;
     //listener to check / execute when buttons are pressed. 
     document.addEventListener('DOMContentLoaded', () => {
       'use strict';
@@ -300,32 +309,33 @@ export default class App {
     });
   }
 
-    createRoad() {
-      /* ROAD */
-      var planeGeometry = {},
-        planeMaterial = {};
-  
-      const PLANE_WIDTH = 70,
-        PLANE_LENGTH = 500,
-        PADDING = PLANE_WIDTH / 5 * 2;
-  
-      planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
-  
-      planeMaterial = new THREE.MeshLambertMaterial({
-        color: 0x696969 //some random color for now
-      });
-  
-      this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
-      //rotate the plane so it looks like a straight, long road
-      this.plane.rotation.x = 1.65;
-      this.plane.receiveShadow = true;
-      this.plane.translateZ(10);
-      this.scene.add(this.plane);
-    }
+  //creating the road
+  createRoad() {
+    /* ROAD */
+    var planeGeometry = {},
+      planeMaterial = {};
 
-    rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
-      object.rotateX(THREE.Math.degToRad(degreeX));
-      object.rotateY(THREE.Math.degToRad(degreeY));
-      object.rotateZ(THREE.Math.degToRad(degreeZ));
-    }
+    const PLANE_WIDTH = 70,
+      PLANE_LENGTH = 500,
+      PADDING = PLANE_WIDTH / 5 * 2;
+
+    planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
+
+    planeMaterial = new THREE.MeshLambertMaterial({
+      color: 0x696969 //some random color for now
+    });
+
+    this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    //rotate the plane so it looks like a straight, long road
+    this.plane.rotation.x = 1.65;
+    this.plane.receiveShadow = true;
+    this.plane.translateZ(10);
+    this.scene.add(this.plane);
   }
+
+  rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
+    object.rotateX(THREE.Math.degToRad(degreeX));
+    object.rotateY(THREE.Math.degToRad(degreeY));
+    object.rotateZ(THREE.Math.degToRad(degreeZ));
+  }
+}
