@@ -69,12 +69,11 @@ export default class App {
 
   createRoad() {
     /* ROAD */
-    //this.plane = {};
     var planeGeometry = {},
       planeMaterial = {};
 
-    const PLANE_WIDTH = 50,
-      PLANE_LENGTH = 1000,
+    const PLANE_WIDTH = 40,
+      PLANE_LENGTH = 500,
       PADDING = PLANE_WIDTH / 5 * 2;
 
     planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
@@ -84,6 +83,8 @@ export default class App {
     });
 
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
+    //rotate the plane so it looks like a straight, long road
+    this.plane.rotation.x = 1.65;
     this.plane.receiveShadow = true;
 
     this.scene.add(this.plane);
