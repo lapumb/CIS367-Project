@@ -12,6 +12,7 @@ export default class App {
       antialias: true
     });
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x23a3a1);
     // Use perspective camera:
     //   Field of view: 75 degrees
     //   Screen aspect ration 4:3
@@ -72,14 +73,14 @@ export default class App {
     var planeGeometry = {},
       planeMaterial = {};
 
-    const PLANE_WIDTH = 40,
+    const PLANE_WIDTH = 50,
       PLANE_LENGTH = 500,
       PADDING = PLANE_WIDTH / 5 * 2;
 
     planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
 
     planeMaterial = new THREE.MeshLambertMaterial({
-      color: 0x78909C //some random color for now
+      color: 0x696969 //some random color for now
     });
 
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
