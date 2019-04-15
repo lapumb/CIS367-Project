@@ -36,9 +36,13 @@ export default class App {
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);
 
-    //this.createCar();
+    this.createCar();
 
     this.createRoad();
+
+    this.myCar.translateZ(150);
+    this.myCar.translateY(-20);
+    this.myCar.rotationY(THREE.Math.PI / 2)
 
 
     window.addEventListener('resize', () => this.resizeHandler());
@@ -73,7 +77,7 @@ export default class App {
     var planeGeometry = {},
       planeMaterial = {};
 
-    const PLANE_WIDTH = 50,
+    const PLANE_WIDTH = 70,
       PLANE_LENGTH = 500,
       PADDING = PLANE_WIDTH / 5 * 2;
 
@@ -87,7 +91,7 @@ export default class App {
     //rotate the plane so it looks like a straight, long road
     this.plane.rotation.x = 1.65;
     this.plane.receiveShadow = true;
-
+    this.plane.translateZ(10);
     this.scene.add(this.plane);
 
   }
@@ -96,7 +100,8 @@ export default class App {
     //adding body
     this.myCar = new Car();
     this.scene.add(this.myCar);
-    this.myCar.matrixAutoUpdate = false;
+
+    this.myCar.matrixAutoUpdate = true;
 
     //front right tire
     this.frtire = new Wheel(8);
