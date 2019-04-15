@@ -4,7 +4,7 @@ import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
-//import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally? 
+//import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally?
 
 export default class App {
   constructor() {
@@ -24,7 +24,7 @@ export default class App {
     //   Near plane at z=0.5, far plane at z=500
     this.camera = new THREE.PerspectiveCamera(75, 4 / 3, 0.5, 500);
     // Place the camera at (0,0,100)
-    this.camera.position.z = 100;
+    this.camera.position.z = 210;
 
     this.tracker = new TrackballControls(this.camera);
     this.tracker.rotateSpeed = 2.0;
@@ -58,9 +58,9 @@ export default class App {
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
     //this.createCar();
     //this.loadPoopingDog();
-    //this.loadDeer(); 
-    //this.loadGasCan(); 
-    //this.loadDog(); 
+    //this.loadDeer();
+    //this.loadGasCan();
+    //this.loadDog();
 
     this.createCar();
     this.createRoad();
@@ -88,7 +88,7 @@ export default class App {
   resizeHandler() {
     const canvas = document.getElementById("mycanvas");
     let w = window.innerWidth - 16;
-    let h = 0.75 * w;  /* maintain 4:3 ratio */
+    let h = 0.75 * w; /* maintain 4:3 ratio */
     if (canvas.offsetTop + h > window.innerHeight) {
       h = window.innerHeight - canvas.offsetTop - 16;
       w = 4 / 3 * h;
@@ -104,7 +104,7 @@ export default class App {
     //adding body
     this.myCar = new Car();
     //this.scene.add(this.myCar);
-    // changed this to true, it would'nt let me move or 
+    // changed this to true, it would'nt let me move or
     // rotate the car when it was false
     this.myCar.matrixAutoUpdate = true;
 
@@ -140,14 +140,14 @@ export default class App {
     //this.scene.add(this.bltire);
     //this.bltire.matrixAutoUpdate = false;
 
-    //added all car elements to a group so we can 
+    //added all car elements to a group so we can
     //move them all together with ease
-    this.carGroup = new THREE.Group(); 
-    this.carGroup.add(this.myCar); 
+    this.carGroup = new THREE.Group();
+    this.carGroup.add(this.myCar);
     this.carGroup.add(this.fltire);
     this.carGroup.add(this.frtire);
     this.carGroup.add(this.bltire);
-    this.carGroup.add(this.brtire);    
+    this.carGroup.add(this.brtire);
 
     this.carGroup.translateZ(160);
     this.carGroup.translateY(-15);
@@ -162,7 +162,7 @@ export default class App {
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5); 
+        //gltf.scene.translateX(5);
         this.scene.add(gltf.scene);
       },
       (xhr) => {
@@ -182,7 +182,7 @@ export default class App {
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5); 
+        //gltf.scene.translateX(5);
         this.scene.add(gltf.scene);
       },
       (xhr) => {
@@ -221,7 +221,7 @@ export default class App {
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5); 
+        //gltf.scene.translateX(5);
         this.scene.add(gltf.scene);
       },
       (xhr) => {
@@ -259,6 +259,23 @@ export default class App {
     this.frtire.rotateY(16);
   }
 
+  //moves the car to the left
+  moveToLeft() {
+    this.carGroup.translateZ(-21);
+  }
+
+  // moves the car to the right
+  moveToRight() {
+    this.carGroup.translateZ(21);
+  }
+
+  jump() {
+    this.carGroup.translateY(15);
+  }
+
+  dropDown() {
+    this.carGroup.translateY(-15);
+  }
   //rotating car wheels
   rotateWheels() {
     this.brtire.matrixAutoUpdate = false;
@@ -275,7 +292,7 @@ export default class App {
   //handling key strokes (left and right arrows, respectively), called in render()
   onArrowPressed() {
     var count = 0;
-    //listener to check / execute when buttons are pressed. 
+    //listener to check / execute when buttons are pressed.
     document.addEventListener('DOMContentLoaded', () => {
       'use strict';
 
@@ -283,12 +300,21 @@ export default class App {
         const key = event.keyCode;
         if (key == 37) { //left arrow pressed
           if (count < 1) {
+            this.moveToLeft();
             this.leftTurn();
             count += 1;
           }
         }
-        if (key == 39) { //right arrow pressed  
+        if (key == 39) { //right arrow pressed
           if (count < 1) {
+            this.moveToRight();
+            this.rightTurn();
+            count += 1;
+          }
+        }
+        if (key == 38) { //right arrow pressed
+          if (count < 1) {
+            this.jump();
             this.rightTurn();
             count += 1;
           }
@@ -297,12 +323,20 @@ export default class App {
       document.addEventListener('keyup', event => {
         const key = event.keyCode;
         if (key == 37) { //left arrow released
+          this.moveToRight();
           this.returnFromLeft();
           count = 0;
         }
 
         if (key == 39) { //right arrow released
+          this.moveToLeft();
           this.returnFromRight();
+          count = 0;
+        }
+
+        if (key == 38) { //right arrow released
+          this.dropDown();
+          //this.returnFromRight();
           count = 0;
         }
       });
