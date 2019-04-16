@@ -1,15 +1,11 @@
 import * as THREE from 'three';
-import TrackballControls from 'three-trackballcontrols';
 import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
-import {
-  isNull
-} from 'util';
-//import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally?
 var time = 0;
-var speedMult = 1; //multiplier for gas tank, change to .5 so everything slows down
+var scoreMult = 1; //multiplier for gas tank, change to .5 so everything slows down
+const second = 30;
 
 export default class App {
   constructor() {
@@ -19,6 +15,7 @@ export default class App {
       canvas: c,
       antialias: true
     });
+    this.score = 0;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x23a3a1);
     this.loader = new GLTFLoader();
@@ -33,12 +30,6 @@ export default class App {
     this.camera = new THREE.PerspectiveCamera(75, 4 / 3, 0.5, 500);
     // Place the camera at (0,0,100)
     this.camera.position.z = 210;
-
-    this.tracker = new TrackballControls(this.camera);
-    this.tracker.rotateSpeed = 2.0;
-    // Allow zoom and pan
-    this.tracker.noZoom = false;
-    this.tracker.noPan = false;
 
     const keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
     keyLight.position.set(-100, 0, 100);
@@ -83,12 +74,20 @@ export default class App {
   }
 
   render() {
-    this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
-    this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
-    this.onArrowPressed(); //moved key strokes to its own function for simplicity
-    this.randomObject(time);
-    time += 1;
+    if (this.score == 100) {
+      alert("You win! Refresh the page to play again.");
+    } else {
+      this.renderer.render(this.scene, this.camera);
+      this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
+      this.onArrowPressed(); //moved key strokes to its own function for simplicity
+      this.randomObject(time);
+      time += 1;
+      if (time % second == 0) {
+        this.score += (1 * scoreMult);
+      }
+      var lblScore = document.getElementById('lblScore');
+      lblScore.innerHTML = this.score;
+    }
 
     /*for (var i = 0; i < this.collidables.length - 1; i++) {
       console.log(this.collidables[i]);
@@ -123,7 +122,6 @@ export default class App {
     canvas.height = h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
-    this.tracker.handleResize();
   }
 
   //creates car
@@ -273,7 +271,6 @@ export default class App {
   //this.rotateRandomCarWheels();
   randomCarRender() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
     this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
 
     if (this.rancarGroup.position.z < 300) {
@@ -329,7 +326,6 @@ export default class App {
 
   poopingDogTranslation() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.dog.position.z < 300) {
       this.dog.translateZ(2);
@@ -377,7 +373,6 @@ export default class App {
   //render function to make deer move across road
   moveDeerRight() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.deerR.position.z < 230) {
       this.deerR.translateX(-0.6);
@@ -422,7 +417,6 @@ export default class App {
   //render function to make deer move across road
   moveDeerLeft() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.deerL.position.z < 230) {
       this.deerL.translateX(-0.6);
@@ -479,7 +473,6 @@ export default class App {
 
   moveGasCan() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.boost.position.z < 230) {
       this.boost.translateZ(.7);
@@ -633,7 +626,6 @@ export default class App {
   //handling tree movement
   handleTreeMovementLeft() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.myTreeL.position.z === 200) {
       this.placeTreeLeft();
@@ -654,7 +646,6 @@ export default class App {
 
   handleTreeMovementRight() {
     this.renderer.render(this.scene, this.camera);
-    this.tracker.update();
 
     if (this.myTreeR.position.z === 200) {
       this.placeTreeRight();
