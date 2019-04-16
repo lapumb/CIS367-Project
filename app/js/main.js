@@ -66,7 +66,6 @@ export default class App {
     this.createRoad();
 
 
-
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
 
@@ -79,7 +78,7 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     //var count = 0; //variable for key strokes
-    //this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
+    this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
 
     requestAnimationFrame(() => this.render());
@@ -149,7 +148,7 @@ export default class App {
     this.carGroup.add(this.bltire);
     this.carGroup.add(this.brtire);
 
-    this.carGroup.translateZ(160);
+    this.carGroup.translateZ(170);
     this.carGroup.translateY(-15);
     this.rotateObject(this.carGroup, 0, 90, 0);
 
@@ -261,7 +260,11 @@ export default class App {
 
   //moves the car to the left
   moveToLeft() {
-    this.carGroup.translateZ(-21);
+    if (this.carGroup.position.z < 170) {
+
+    } else {
+      this.carGroup.translateZ(-21);
+    }
   }
 
   // moves the car to the right
@@ -312,31 +315,18 @@ export default class App {
             count += 1;
           }
         }
-        if (key == 38) { //right arrow pressed
-          if (count < 1) {
-            this.jump();
-            this.rightTurn();
-            count += 1;
-          }
-        }
       });
       document.addEventListener('keyup', event => {
         const key = event.keyCode;
         if (key == 37) { //left arrow released
-          this.moveToRight();
+          //this.moveToRight();
           this.returnFromLeft();
           count = 0;
         }
 
         if (key == 39) { //right arrow released
-          this.moveToLeft();
+          //this.moveToLeft();
           this.returnFromRight();
-          count = 0;
-        }
-
-        if (key == 38) { //right arrow released
-          this.dropDown();
-          //this.returnFromRight();
           count = 0;
         }
       });
