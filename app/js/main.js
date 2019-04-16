@@ -56,16 +56,15 @@ export default class App {
  */
 
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
-    //this.createCar();
     //this.loadPoopingDog();
     this.loadDeer();
     //this.loadGasCan();
     //this.loadDog();
 
-    this.createCar();
+    this.createUserCar();
     this.createRoad();
 
-     this.placeTree();
+    this.placeTreeRight();
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -105,7 +104,8 @@ export default class App {
     this.tracker.handleResize();
   }
 
-  createCar() {
+  //creates car
+  createUserCar() {
     //adding body
     this.myCar = new Car();
     //this.scene.add(this.myCar);
@@ -161,6 +161,7 @@ export default class App {
     this.scene.add(this.carGroup);
   }
 
+  //loads in the pooping dog (lmao)
   loadPoopingDog() {
     this.loader.load(
       'app/js/models/PoopingDog/scene.gltf',
@@ -181,6 +182,7 @@ export default class App {
     );
   }
 
+  //loads the whitetail buck
   loadDeer() {
     this.loader.load(
       'app/js/models/Buck/scene.gltf',
@@ -188,9 +190,11 @@ export default class App {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
         //gltf.scene.translateX(5);
+        //gltf.scene.scale.set(2, 2, 2); //this is how you scale
         this.deer = gltf.scene;
-        this.deer.translateX(40); 
-        this.deer.translateZ(-10); 
+        this.deer.translateX(40);
+        this.deer.translateZ(100);
+        this.deer.translateY(-3);
         this.scene.add(this.deer);
 
         requestAnimationFrame(() => this.moveDeer());
@@ -206,15 +210,18 @@ export default class App {
     );
   }
 
+  //render function to make deer move across road
   moveDeer() {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    this.deer.translateX(-1); 
+    this.deer.translateX(-1);
     this.deer.translateZ(1);
 
     requestAnimationFrame(() => this.moveDeer());
- }
+  }
+
+  //loads a dog
   loadDog() {
     this.loader.load(
       'app/js/models/Dog/scene.gltf',
@@ -231,9 +238,10 @@ export default class App {
         // called when loading has errors
         console.error('An error happened', error);
       },
-    ); 
+    );
   }
 
+  //loads gas can (boost?)
   loadGasCan() {
     this.loader.load(
       'app/js/models/OldJerryCan/scene.gltf',
@@ -386,43 +394,46 @@ export default class App {
     this.scene.add(this.plane);
   }
 
-  placeTree() {
-    this.myTree = new Tree(); 
+  //placing tree on the right side of the road
+  placeTreeRight() {
+    this.myTree = new Tree();
     this.myTree.translateZ(-300);
     this.myTree.translateX(70);
     this.scene.add(this.myTree);
   }
 
+  //rotate an object
   rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
     object.rotateX(THREE.Math.degToRad(degreeX));
     object.rotateY(THREE.Math.degToRad(degreeY));
     object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 
+  //appear objects at random. 
   appearRandomObject() {
     var random = Math.floor(Math.random() * 11); //0-10
 
-    switch(random) {
+    switch (random) {
       case 0: //deer
-        break; 
+        break;
       case 1: //tree
-        break; 
+        break;
       case 2: //car
-        break; 
+        break;
       case 3: //pooping dog
         break;
       case 4: //deer
-        break; 
+        break;
       case 5: //tree
         break;
       case 6: //pooping dog
-        break; 
+        break;
       case 7: //car
-        break; 
+        break;
       case 8: //tree
-        break; 
+        break;
       case 9: //pooping dog
-        break; 
+        break;
       case 10: //gas can
         break;
     }
