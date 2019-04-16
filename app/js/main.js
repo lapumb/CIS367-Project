@@ -62,6 +62,7 @@ export default class App {
     this.createUserCar();
     this.createRoad();
     this.createGrass();
+    //this.loadGasCan();
     //this.createRandomCar();
     //this.loadDeerLeft();
     //this.loadDeerRight();
@@ -429,8 +430,26 @@ export default class App {
       'app/js/models/OldJerryCan/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
-        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        this.scene.add(gltf.scene);
+        //gltf.scene.scale.set(5,5,5); 
+        this.boost = gltf.scene; 
+        this.boost.translateZ(100); 
+
+        //randomly place in a lane
+        var lane = Math.floor(Math.random() * 2); //0-2
+        switch (lane) {
+          case 0:
+            this.boost.translateX(41);
+            break;
+          case 1:
+            this.boost.translateX(-41);
+            break;
+          default:
+            break;
+        }
+
+        this.scene.add(this.boost);
+
+        requestAnimationFrame(() => this.moveGasCan());
       },
       (xhr) => {
         // called while loading is progressing
@@ -441,6 +460,25 @@ export default class App {
         console.error('An error happened', error);
       },
     );
+  }
+
+  moveGasCan() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    if (this.boost.position.z < 230) {
+      this.boost.translateZ(.7);
+      this.boost.translateY(-0.15);
+      if(this.boost.position.x > 0) { this.boost.translateX(-.08); }
+      else { this.boost.translateX(.08);}
+    }
+
+    else {
+      this.scene.remove(this.boost);
+      cancelAnimationFrame(() => this.moveGasCan());
+    }
+
+    requestAnimationFrame(() => this.moveGasCan());
   }
 
   //called when left key is pressed, turns tires left
