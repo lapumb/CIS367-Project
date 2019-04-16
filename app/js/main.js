@@ -288,13 +288,24 @@ export default class App {
 
   //moves the car to the left
   moveToLeft() {
-    this.carGroup.translateZ(-21);
+    if (this.carGroup.position.x < -40) {
+      return;
+    } else {
+      this.carGroup.translateZ(-21);
+      console.log(this.carGroup.position);
+    }
   }
 
   // moves the car to the right
   moveToRight() {
-    this.carGroup.translateZ(21);
+    if (this.carGroup.position.x > 40) {
+      return;
+    } else {
+      this.carGroup.translateZ(21);
+      console.log(this.carGroup.position);
+    }
   }
+
   //rotating car wheels
   rotateWheels() {
     this.brtire.matrixAutoUpdate = false;
@@ -421,21 +432,21 @@ export default class App {
   // Collision Detection
   // we would use this.carGroup instead of hero
 
-  /*detectCollisions( objects ) {
-  var origin = hero.position.clone();
+  detectCollisions(objects) {
+    var origin = this.carGroup.position.clone();
 
-  for ( var v = 0, vMax = hero.geometry.vertices.length; v < vMax; v += 1 ) {
-    var localVertex = hero.geometry.vertices[ v ].clone();
-    var globalVertex = localVertex.applyMatrix4( hero.matrix );
-    var directionVector = globalVertex.sub( hero.position );
+    for (var v = 0, vMax = this.carGroup.geometry.vertices.length; v < vMax; v += 1) {
+      var localVertex = this.carGroup.geometry.vertices[v].clone();
+      var globalVertex = localVertex.applyMatrix4(this.carGroup.matrix);
+      var directionVector = globalVertex.sub(this.carGroup.position);
 
-    var ray = new THREE.Raycaster( origin, directionVector.clone().normalize() );
-    var intersections = ray.intersectObjects( objects );
-    if ( intersections.length > 0 &&
-        intersections[ 0 ].distance < directionVector.length() ) {
-      return true;
+      var ray = new THREE.Raycaster(origin, directionVector.clone().normalize());
+      var intersections = ray.intersectObjects(objects);
+      if (intersections.length > 0 &&
+        intersections[0].distance < directionVector.length()) {
+        return true;
+      }
     }
+    return false;
   }
-  return false;
-} */
 }
