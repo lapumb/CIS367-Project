@@ -5,7 +5,7 @@ import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
 var time = 0;
 var scoreMult = 1; //multiplier for gas tank, change to .5 so everything slows down
-const second = 10; 
+const second = 30;
 
 export default class App {
   constructor() {
@@ -15,6 +15,7 @@ export default class App {
       canvas: c,
       antialias: true
     });
+    this.score = 0;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x23a3a1);
     this.loader = new GLTFLoader();
@@ -73,11 +74,17 @@ export default class App {
   }
 
   render() {
-    this.renderer.render(this.scene, this.camera);
-    this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
-    this.onArrowPressed(); //moved key strokes to its own function for simplicity
-    this.randomObject(time);
-    time += 1;
+    if (this.score == 100) { alert("You win! Refresh the page to play again."); }
+    else {
+      this.renderer.render(this.scene, this.camera);
+      this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
+      this.onArrowPressed(); //moved key strokes to its own function for simplicity
+      this.randomObject(time);
+      time += 1;
+      if (time % second == 0) { this.score += (1 * scoreMult); }
+      var lblScore = document.getElementById('lblScore');
+      lblScore.innerHTML = this.score;
+    }
 
     requestAnimationFrame(() => this.render());
   }
@@ -324,7 +331,7 @@ export default class App {
         //gltf.scene.scale.set(2, 2, 2); //this is how you scale
         gltf.scene.scale.set(.3, .3, .3);
         this.deerR = gltf.scene;
-        this.deerR.name = 'rightDeer'; 
+        this.deerR.name = 'rightDeer';
         this.deerR.translateX(40);
         this.deerR.translateZ(150);
         this.deerR.translateY(-3);
@@ -368,7 +375,7 @@ export default class App {
         // called when the resource is loaded
         gltf.scene.scale.set(.3, .3, .3);
         this.deerL = gltf.scene;
-        this.deerL.name = 'leftDeer'; 
+        this.deerL.name = 'leftDeer';
         this.deerL.translateX(-40);
         this.deerL.translateZ(150);
         this.deerL.translateY(-3);
@@ -414,7 +421,7 @@ export default class App {
           // called when the resource is loaded
           //gltf.scene.scale.set(5,5,5); 
           this.boost = gltf.scene;
-          this.boost.name = 'gascan'; 
+          this.boost.name = 'gascan';
           this.boost.translateZ(100);
 
           //randomly place in a lane
@@ -576,7 +583,7 @@ export default class App {
   //placing tree on the right side of the road
   placeTreeRight() {
     this.myTreeR = new Tree();
-    this.myTreeR.name = 'rightTree'; 
+    this.myTreeR.name = 'rightTree';
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
     this.myTreeR.translateY(20);
@@ -587,7 +594,7 @@ export default class App {
 
   placeTreeLeft() {
     this.myTreeL = new Tree();
-    this.myTreeL.name = 'leftTree'; 
+    this.myTreeL.name = 'leftTree';
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
@@ -683,18 +690,18 @@ export default class App {
       time = 0;
       switch (random) {
         case 0: //deer
-          if(!this.scene.getObjectByName('leftDeer')) { if (ran === 0) { this.loadDeerLeft(); } }
-          if(!this.scene.getObjectByName('rightDeer')) { if(ran === 1) { this.loadDeerRight(); } }
+          if (!this.scene.getObjectByName('leftDeer')) { if (ran === 0) { this.loadDeerLeft(); } }
+          if (!this.scene.getObjectByName('rightDeer')) { if (ran === 1) { this.loadDeerRight(); } }
           break;
         case 1: //tree
-          if(!this.scene.getObjectByName('leftTree')) { if (ran === 0) { this.placeTreeLeft(); } }
-          if(!this.scene.getObjectByName('rightTree')) { if(ran === 1) { this.placeTreeRight(); } }
+          if (!this.scene.getObjectByName('leftTree')) { if (ran === 0) { this.placeTreeLeft(); } }
+          if (!this.scene.getObjectByName('rightTree')) { if (ran === 1) { this.placeTreeRight(); } }
           break;
         case 2: //dog
-          if(!this.scene.getObjectByName('dog')) { this.loadPoopingDog(); }
+          if (!this.scene.getObjectByName('dog')) { this.loadPoopingDog(); }
           break;
         case 3: //pooping dog
-          if(!this.scene.getObjectByName('gascan')) { this.loadGasCan(ran); }
+          if (!this.scene.getObjectByName('gascan')) { this.loadGasCan(ran); }
           break;
         default:
           break;
