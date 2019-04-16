@@ -398,4 +398,33 @@ export default class App {
     object.rotateY(THREE.Math.degToRad(degreeY));
     object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
+
+  appearRandomObject() {
+    var random = Math.floor(Math.random() * 11); //0-10
+
+    switch(random) {
+      case 0: //deer
+        break; 
+      case 1: //tree
+        break; 
+      case 2: //car
+        break; 
+      case 3: //pooping dog
+        break;
+      case 4: //deer
+        break; 
+      case 5: //tree
+        break;
+      case 6: //pooping dog
+        break; 
+      case 7: //car
+        break; 
+      case 8: //tree
+        break; 
+      case 9: //pooping dog
+        break; 
+      case 10: //gas can
+        break;
+    }
+  }
 }
