@@ -64,7 +64,7 @@ export default class App {
 
     this.createCar();
     this.createRoad();
-    //this.createGrass();
+    this.createGrass();
 
     this.placeTree();
 
