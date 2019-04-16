@@ -55,7 +55,7 @@ export default class App {
     this.scene.add(lightTwo);*/
 
 
-    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
+    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10));
     //this.loadPoopingDog();
     this.loadDeer();
     //this.loadGasCan();
@@ -64,9 +64,6 @@ export default class App {
     this.createUserCar();
     this.createRoad();
     this.createGrass();
-
-    this.placeTreeRight();
-    this.placeTreeLeft(); 
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -80,18 +77,8 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     //var count = 0; //variable for key strokes
-    this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
+    this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
-    if (this.myTreeR.position.z < 300) { //when tree is on right side
-      this.myTreeR.translateZ(1);
-      this.myTreeR.translateY(-0.075);
-      this.myTreeR.translateX(-0.062);
-    }
-    if (this.myTreeL.position.z < 300) { //when tree is on right side
-      this.myTreeL.translateZ(1);
-      this.myTreeL.translateY(-0.075);
-      this.myTreeL.translateX(0.062);
-    }
 
     requestAnimationFrame(() => this.render());
   }
@@ -109,6 +96,20 @@ export default class App {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
     this.tracker.handleResize();
+  }
+
+  //handling tree movement
+  handleTreeMovement() {
+    if (this.myTreeR.position.z < 300) { //when tree is on right side
+      this.myTreeR.translateZ(1);
+      this.myTreeR.translateY(-0.075);
+      this.myTreeR.translateX(-0.062);
+    }
+    if (this.myTreeL.position.z < 300) { //when tree is on right side
+      this.myTreeL.translateZ(1);
+      this.myTreeL.translateY(-0.075);
+      this.myTreeL.translateX(0.062);
+    }
   }
 
   //creates car
@@ -162,7 +163,7 @@ export default class App {
     this.carGroup.add(this.brtire);
 
     this.carGroup.translateZ(170);
-    this.carGroup.translateY(-15);
+    this.carGroup.translateY(-12);
     this.rotateObject(this.carGroup, 0, 90, 0);
 
     this.scene.add(this.carGroup);
@@ -198,6 +199,7 @@ export default class App {
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
         //gltf.scene.translateX(5);
         //gltf.scene.scale.set(2, 2, 2); //this is how you scale
+        gltf.scene.scale.set(.7, .7, .7);
         this.deer = gltf.scene;
         this.deer.translateX(40);
         this.deer.translateZ(100);
@@ -222,7 +224,7 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    this.deer.translateX(-1);
+    this.deer.translateX(-0.8);
     this.deer.translateZ(1);
 
     requestAnimationFrame(() => this.moveDeer());
@@ -314,7 +316,7 @@ export default class App {
   }
 
   //rotating car wheels
-  rotateWheels() {
+  rotateUserWheels() {
     this.brtire.matrixAutoUpdate = false;
     this.bltire.matrixAutoUpdate = false;
     this.frtire.matrixAutoUpdate = false;
@@ -464,6 +466,7 @@ export default class App {
       case 7: //car
         break;
       case 8: //tree
+        this.placeTreeLeft(); 
         break;
       case 9: //pooping dog
         break;
