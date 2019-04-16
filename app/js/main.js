@@ -73,6 +73,10 @@ export default class App {
     //requestAnimationFrame(() => this.appearRandomObject());
   }
 
+  gameOver() {
+    alert("You Crashed! Your Score: " + this.score + "\n" + "Refresh the page to play again");
+  }
+
   render() {
     if (this.score == 100) {
       alert("You win! Refresh the page to play again.");
@@ -93,17 +97,19 @@ export default class App {
       console.log(this.collidables[i]);
     }*/
 
-    /*if (this.detectCollisions(this.collidables) == true) {
+    if (this.detectCollisions(this.collidables) == true) {
       console.log("collision");
-    }*/
+      this.gameOver();
+    }
 
     for (var i = 0; i < this.collidables.length; i++) {
       var collidable = this.collidables[i];
-      if (this.carGroup.position.x < (collidable.position.x - 5) &&
-        this.carGroup.position.x > (collidable.position.x + 5)) {
+      if (this.carGroup.position.x == (collidable.position.x) &&
+        this.carGroup.position.z == (collidable.position.z)) {
         console.log("collision");
+
       } else {
-        console.log("no collision");
+        //console.log("no collision");
       }
     }
 
@@ -250,6 +256,7 @@ export default class App {
     }
 
     this.rotateObject(this.rancarGroup, 0, 90, 0);
+    this.collidables.push(this.rancarGroup);
     this.scene.add(this.rancarGroup);
 
     requestAnimationFrame(() => this.randomCarRender());
@@ -308,6 +315,7 @@ export default class App {
           default:
             break;
         }
+        this.collidables.push(this.dog);
         this.scene.add(this.dog);
 
 
@@ -382,7 +390,6 @@ export default class App {
       cancelAnimationFrame(() => this.moveDeerRight());
       this.scene.remove(this.deerR);
     }
-
     requestAnimationFrame(() => this.moveDeerRight());
   }
 
@@ -399,6 +406,7 @@ export default class App {
         this.deerL.translateZ(150);
         this.deerL.translateY(-3);
         this.deerL.rotateY(8);
+        this.collidables.push(this.deerL);
         this.scene.add(this.deerL);
 
         requestAnimationFrame(() => this.moveDeerLeft());
@@ -455,6 +463,7 @@ export default class App {
               break;
           }
 
+          this.collidables.push(this.boost);
           this.scene.add(this.boost);
 
           requestAnimationFrame(() => this.moveGasCan());
@@ -618,6 +627,7 @@ export default class App {
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
+    this.collidables.push(this.myTreeL);
     this.scene.add(this.myTreeL);
 
     requestAnimationFrame(() => this.handleTreeMovementLeft());
@@ -759,7 +769,7 @@ export default class App {
       var directionVector = globalVertex.sub(this.carGroup.children[0].children[0].position);
 
       var ray = new THREE.Raycaster(origin, directionVector.clone().normalize());
-      var intersections = ray.intersectObjects(this.collidables[0].children[0]);
+      var intersections = ray.intersectObjects(this.collidables, true);
       if (intersections.length > 0 &&
         intersections[0].distance < directionVector.length()) {
         console.log("collision");
