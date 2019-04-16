@@ -17,6 +17,9 @@ export default class App {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x23a3a1);
     this.loader = new GLTFLoader();
+    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10)); //user ties
+    this.rotZ2 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-5)); //opposing car tires
+
 
     // Use perspective camera:
     //   Field of view: 75 degrees
@@ -54,16 +57,16 @@ export default class App {
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);*/
 
-
-    this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10));
     //this.loadPoopingDog();
-    this.loadDeer();
+    //this.loadDeerRight();
+    //this.loadDeerLeft(); 
     //this.loadGasCan();
     //this.loadDog();
 
     this.createUserCar();
     this.createRoad();
     this.createGrass();
+    this.createRandomCar();
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -71,12 +74,12 @@ export default class App {
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
     requestAnimationFrame(() => this.render());
+    //requestAnimationFrame(() => this.appearRandomObject());
   }
 
   render() {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
-    //var count = 0; //variable for key strokes
     this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
 
@@ -99,16 +102,19 @@ export default class App {
   }
 
   //handling tree movement
-  handleTreeMovement() {
-    if (this.myTreeR.position.z < 300) { //when tree is on right side
-      this.myTreeR.translateZ(1);
-      this.myTreeR.translateY(-0.075);
-      this.myTreeR.translateX(-0.062);
-    }
+  handleTreeMovementLeft(object) {
     if (this.myTreeL.position.z < 300) { //when tree is on right side
       this.myTreeL.translateZ(1);
       this.myTreeL.translateY(-0.075);
       this.myTreeL.translateX(0.062);
+    }
+  }
+
+  handleTreeMovementRight() {
+    if (this.myTreeR.position.z < 300) { //when tree is on right side
+      this.myTreeR.translateZ(1);
+      this.myTreeR.translateY(-0.075);
+      this.myTreeR.translateX(-0.062);
     }
   }
 
@@ -169,6 +175,110 @@ export default class App {
     this.scene.add(this.carGroup);
   }
 
+  //rotating car wheels
+  rotateUserWheels() {
+    this.brtire.matrixAutoUpdate = false;
+    this.bltire.matrixAutoUpdate = false;
+    this.frtire.matrixAutoUpdate = false;
+    this.fltire.matrixAutoUpdate = false;
+
+    this.bltire.matrix.multiply(this.rotZ1);
+    this.brtire.matrix.multiply(this.rotZ1);
+    this.frtire.matrix.multiply(this.rotZ1);
+    this.fltire.matrix.multiply(this.rotZ1);
+  }
+
+
+  createRandomCar() {
+    var randomColor = Math.floor(Math.random() * 0xFFFFFF);
+    this.ranCar = new Car(randomColor);
+    this.ranCar.matrixAutoUpdate = true;
+
+    //front right tire
+    this.ranfrtire = new Wheel(8);
+    this.ranfrtire.translateX(8);
+    this.ranfrtire.translateY(-5);
+    this.ranfrtire.translateZ(4);
+    //this.scene.add(this.frtire);
+    //this.frtire.matrixAutoUpdate = false;
+
+    //front left tire
+    this.ranfltire = new Wheel(8);
+    this.ranfltire.translateX(8);
+    this.ranfltire.translateY(-5);
+    this.ranfltire.translateZ(-4);
+
+    //back right tire
+    this.ranbrtire = new Wheel(8);
+    this.ranbrtire.translateX(-3);
+    this.ranbrtire.translateY(-5);
+    this.ranbrtire.translateZ(-4);
+
+    //back right tire
+    this.ranbltire = new Wheel(8);
+    this.ranbltire.translateX(-3);
+    this.ranbltire.translateY(-5);
+    this.ranbltire.translateZ(4);
+
+    this.rancarGroup = new THREE.Group();
+    this.rancarGroup.add(this.ranCar);
+    this.rancarGroup.add(this.ranfltire);
+    this.rancarGroup.add(this.ranfrtire);
+    this.rancarGroup.add(this.ranbltire);
+    this.rancarGroup.add(this.ranbrtire);
+
+    this.rancarGroup.translateZ(-300);
+    this.rancarGroup.translateY(18);
+
+    //randomly place in a lane
+    var lane = Math.floor(Math.random() * 3); //0-3
+    switch(lane) {
+      case 0:
+        this.rancarGroup.translateX(21);
+        break; 
+      case 1:
+        this.rancarGroup.translateX(-21);
+        break;
+      default:
+        break; 
+    }
+
+    this.rotateObject(this.rancarGroup, 0, 90, 0);
+    this.scene.add(this.rancarGroup);
+
+    requestAnimationFrame(() => this.randomCarRender());
+  }
+
+  //rotating car wheels
+  rotateRandomCarWheels() {
+    this.ranbrtire.matrixAutoUpdate = false;
+    this.ranbltire.matrixAutoUpdate = false;
+    this.ranfrtire.matrixAutoUpdate = false;
+    this.ranfltire.matrixAutoUpdate = false;
+
+    this.ranbltire.matrix.multiply(this.rotZ2);
+    this.ranbrtire.matrix.multiply(this.rotZ2);
+    this.ranfrtire.matrix.multiply(this.rotZ2);
+    this.ranfltire.matrix.multiply(this.rotZ2);
+  }
+
+  //this.rotateRandomCarWheels();
+  randomCarRender() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+    this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
+
+    if (this.rancarGroup.position.z < 300) {
+      this.rancarGroup.translateX(-1);
+      this.rancarGroup.translateY(-0.066); 
+    }
+    else {
+      this.createRandomCar(); 
+    }
+
+    requestAnimationFrame(() => this.randomCarRender());
+  }
+
   //loads in the pooping dog (lmao)
   loadPoopingDog() {
     this.loader.load(
@@ -191,7 +301,7 @@ export default class App {
   }
 
   //loads the whitetail buck
-  loadDeer() {
+  loadDeerRight() {
     this.loader.load(
       'app/js/models/Buck/scene.gltf',
       (gltf) => {
@@ -206,7 +316,7 @@ export default class App {
         this.deer.translateY(-3);
         this.scene.add(this.deer);
 
-        requestAnimationFrame(() => this.moveDeer());
+        requestAnimationFrame(() => this.moveDeerRight());
       },
       (xhr) => {
         // called while loading is progressing
@@ -220,14 +330,55 @@ export default class App {
   }
 
   //render function to make deer move across road
-  moveDeer() {
+  moveDeerRight() {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
     this.deer.translateX(-0.8);
     this.deer.translateZ(1);
 
-    requestAnimationFrame(() => this.moveDeer());
+    requestAnimationFrame(() => this.moveDeerRight());
+  }
+
+  //loads the whitetail buck
+  loadDeerLeft() {
+    this.loader.load(
+      'app/js/models/Buck/scene.gltf',
+      (gltf) => {
+        // called when the resource is loaded
+        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
+        //gltf.scene.translateX(5);
+        //gltf.scene.scale.set(2, 2, 2); //this is how you scale
+        gltf.scene.scale.set(.3, .3, .3);
+        this.deer = gltf.scene;
+        this.deer.translateX(-40);
+        this.deer.translateZ(150);
+        this.deer.translateY(-3);
+        this.deer.rotateY(8);
+        this.scene.add(this.deer);
+
+        requestAnimationFrame(() => this.moveDeerLeft());
+      },
+      (xhr) => {
+        // called while loading is progressing
+        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+      },
+      (error) => {
+        // called when loading has errors
+        console.error('An error happened', error);
+      },
+    );
+  }
+
+  //render function to make deer move across road
+  moveDeerLeft() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    this.deer.translateX(-0.4);
+    this.deer.translateZ(.3);
+
+    requestAnimationFrame(() => this.moveDeerLeft());
   }
 
   //loads a dog
@@ -315,19 +466,6 @@ export default class App {
     }
   }
 
-  //rotating car wheels
-  rotateUserWheels() {
-    this.brtire.matrixAutoUpdate = false;
-    this.bltire.matrixAutoUpdate = false;
-    this.frtire.matrixAutoUpdate = false;
-    this.fltire.matrixAutoUpdate = false;
-
-    this.bltire.matrix.multiply(this.rotZ1);
-    this.brtire.matrix.multiply(this.rotZ1);
-    this.frtire.matrix.multiply(this.rotZ1);
-    this.fltire.matrix.multiply(this.rotZ1);
-  }
-
   //handling key strokes (left and right arrows, respectively), called in render()
   onArrowPressed() {
     var count = 0;
@@ -398,7 +536,7 @@ export default class App {
     this.myTreeR = new Tree();
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
-    this.myTreeR.translateY(20); 
+    this.myTreeR.translateY(20);
     this.scene.add(this.myTreeR);
   }
 
@@ -406,7 +544,7 @@ export default class App {
     this.myTreeL = new Tree();
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
-    this.myTreeL.translateY(20); 
+    this.myTreeL.translateY(20);
     this.scene.add(this.myTreeL);
   }
 
@@ -450,29 +588,42 @@ export default class App {
 
     switch (random) {
       case 0: //deer
+        this.placeTreeLeft();
+        this.handleTreeMovementLeft();
         break;
       case 1: //tree
+
         break;
       case 2: //car
+
         break;
       case 3: //pooping dog
+
         break;
       case 4: //deer
+
         break;
       case 5: //tree
+
         break;
       case 6: //pooping dog
+
         break;
       case 7: //car
+
         break;
       case 8: //tree
-        this.placeTreeLeft(); 
+
         break;
       case 9: //pooping dog
         break;
       case 10: //gas can
         break;
+      default:
+        break;
     }
+
+    requestAnimationFrame(() => this.appearRandomObject());
   }
 
   // Collision Detection
