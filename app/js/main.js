@@ -65,6 +65,7 @@ export default class App {
     this.createRoad();
 
     this.placeTreeRight();
+    this.placeTreeLeft(); 
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -80,10 +81,15 @@ export default class App {
     //var count = 0; //variable for key strokes
     this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
-    if (this.myTree.position.z < 300) { //when tree is on right side
-      this.myTree.translateZ(1);
-      this.myTree.translateY(-0.035);
-      this.myTree.translateX(-.062);
+    if (this.myTreeR.position.z < 300) { //when tree is on right side
+      this.myTreeR.translateZ(1);
+      this.myTreeR.translateY(-0.035);
+      this.myTreeR.translateX(-0.062);
+    }
+    if (this.myTreeL.position.z < 300) { //when tree is on right side
+      this.myTreeL.translateZ(1);
+      this.myTreeL.translateY(-0.035);
+      this.myTreeL.translateX(0.062);
     }
 
     requestAnimationFrame(() => this.render());
@@ -386,10 +392,17 @@ export default class App {
 
   //placing tree on the right side of the road
   placeTreeRight() {
-    this.myTree = new Tree();
-    this.myTree.translateZ(-300);
-    this.myTree.translateX(70);
-    this.scene.add(this.myTree);
+    this.myTreeR = new Tree();
+    this.myTreeR.translateZ(-300);
+    this.myTreeR.translateX(70);
+    this.scene.add(this.myTreeR);
+  }
+
+  placeTreeLeft() {
+    this.myTreeL = new Tree();
+    this.myTreeL.translateZ(-300);
+    this.myTreeL.translateX(-70);
+    this.scene.add(this.myTreeL);
   }
 
   //rotate an object
