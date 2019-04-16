@@ -78,7 +78,7 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     //var count = 0; //variable for key strokes
-    //this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
+    this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
     if (this.myTree.position.z < 300) { //when tree is on right side
       this.myTree.translateZ(1);
@@ -154,7 +154,7 @@ export default class App {
     this.carGroup.add(this.bltire);
     this.carGroup.add(this.brtire);
 
-    this.carGroup.translateZ(160);
+    this.carGroup.translateZ(170);
     this.carGroup.translateY(-15);
     this.rotateObject(this.carGroup, 0, 90, 0);
 
@@ -295,14 +295,6 @@ export default class App {
   moveToRight() {
     this.carGroup.translateZ(21);
   }
-
-  jump() {
-    this.carGroup.translateY(15);
-  }
-
-  dropDown() {
-    this.carGroup.translateY(-15);
-  }
   //rotating car wheels
   rotateWheels() {
     this.brtire.matrixAutoUpdate = false;
@@ -339,31 +331,18 @@ export default class App {
             count += 1;
           }
         }
-        if (key === 38) { //up arrow pressed
-          if (count < 1) {
-            this.jump();
-            //this.rightTurn();
-            count += 1;
-          }
-        }
       });
       document.addEventListener('keyup', event => {
         const key = event.keyCode;
         if (key == 37) { //left arrow released
-          this.moveToRight();
+          //this.moveToRight();
           this.returnFromLeft();
           count = 0;
         }
 
         if (key == 39) { //right arrow released
-          this.moveToLeft();
+          //this.moveToLeft();
           this.returnFromRight();
-          count = 0;
-        }
-
-        if (key == 38) { //right arrow released
-          this.dropDown();
-          //this.returnFromRight();
           count = 0;
         }
       });
@@ -438,4 +417,25 @@ export default class App {
         break;
     }
   }
+
+  // Collision Detection
+  // we would use this.carGroup instead of hero
+
+  /*detectCollisions( objects ) {
+  var origin = hero.position.clone();
+
+  for ( var v = 0, vMax = hero.geometry.vertices.length; v < vMax; v += 1 ) {
+    var localVertex = hero.geometry.vertices[ v ].clone();
+    var globalVertex = localVertex.applyMatrix4( hero.matrix );
+    var directionVector = globalVertex.sub( hero.position );
+
+    var ray = new THREE.Raycaster( origin, directionVector.clone().normalize() );
+    var intersections = ray.intersectObjects( objects );
+    if ( intersections.length > 0 &&
+        intersections[ 0 ].distance < directionVector.length() ) {
+      return true;
+    }
+  }
+  return false;
+} */
 }
