@@ -264,7 +264,7 @@ export default class App {
       this.scene.remove(this.rancarGroup);
       this.createRandomCar();
     }
-    
+
     requestAnimationFrame(() => this.randomCarRender());
   }
 
@@ -274,7 +274,7 @@ export default class App {
       'app/js/models/PoopingDog/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
-        gltf.scene.scale.set(8, 8, 8);
+        gltf.scene.scale.set(5, 5, 5);
         this.dog = gltf.scene;
         this.dog.name = 'dog';
         this.dog.translateZ(-300);
@@ -363,7 +363,7 @@ export default class App {
     if (this.deerR.position.z < 230) {
       this.deerR.translateX(-0.6);
       this.deerR.translateZ(.7);
-      this.deerR.translateY(-0.01);
+      this.deerR.translateY(-0.04);
     }
     else {
       cancelAnimationFrame(() => this.moveDeerRight());
@@ -409,7 +409,7 @@ export default class App {
     if (this.deerL.position.z < 230) {
       this.deerL.translateX(-0.6);
       this.deerL.translateZ(.35);
-      this.deerL.translateY(-0.01);
+      this.deerL.translateY(-0.04);
     }
     else {
       cancelAnimationFrame(() => this.moveDeerLeft());
