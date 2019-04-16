@@ -67,6 +67,8 @@ export default class App {
     this.createRoad();
     this.createGrass();
     this.createRandomCar();
+    this.loadDeerLeft(); 
+    this.loadDeerRight(); 
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -273,6 +275,7 @@ export default class App {
       this.rancarGroup.translateY(-0.066); 
     }
     else {
+      this.scene.remove(this.rancarGroup);
       this.createRandomCar(); 
     }
 
@@ -309,12 +312,12 @@ export default class App {
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
         //gltf.scene.translateX(5);
         //gltf.scene.scale.set(2, 2, 2); //this is how you scale
-        gltf.scene.scale.set(.7, .7, .7);
-        this.deer = gltf.scene;
-        this.deer.translateX(40);
-        this.deer.translateZ(100);
-        this.deer.translateY(-3);
-        this.scene.add(this.deer);
+        gltf.scene.scale.set(.3, .3, .3);
+        this.deerR = gltf.scene;
+        this.deerR.translateX(40);
+        this.deerR.translateZ(150);
+        this.deerR.translateY(-3);
+        this.scene.add(this.deerR);
 
         requestAnimationFrame(() => this.moveDeerRight());
       },
@@ -334,8 +337,13 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    this.deer.translateX(-0.8);
-    this.deer.translateZ(1);
+    if(this.deerR.position.z < 300) {
+    this.deerR.translateX(-0.4);
+    this.deerR.translateZ(.3);
+    }
+    else {
+      this.scene.remove(this.deerR); 
+    }
 
     requestAnimationFrame(() => this.moveDeerRight());
   }
@@ -346,16 +354,13 @@ export default class App {
       'app/js/models/Buck/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
-        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5);
-        //gltf.scene.scale.set(2, 2, 2); //this is how you scale
         gltf.scene.scale.set(.3, .3, .3);
-        this.deer = gltf.scene;
-        this.deer.translateX(-40);
-        this.deer.translateZ(150);
-        this.deer.translateY(-3);
-        this.deer.rotateY(8);
-        this.scene.add(this.deer);
+        this.deerL = gltf.scene;
+        this.deerL.translateX(-40);
+        this.deerL.translateZ(150);
+        this.deerL.translateY(-3);
+        this.deerL.rotateY(8);
+        this.scene.add(this.deerL);
 
         requestAnimationFrame(() => this.moveDeerLeft());
       },
@@ -375,8 +380,13 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    this.deer.translateX(-0.4);
-    this.deer.translateZ(.3);
+    if(this.deerL.position.z < 230) {
+      this.deerL.translateX(-0.4);
+      this.deerL.translateZ(.3);
+    }
+    else {
+      this.scene.remove(this.deerL);
+    }
 
     requestAnimationFrame(() => this.moveDeerLeft());
   }
