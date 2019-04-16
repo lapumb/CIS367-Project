@@ -22,7 +22,7 @@ export default class App {
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10)); //user ties
     this.rotZ2 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-5)); //opposing car tires
 
-
+    this.collidables = [];
     // Use perspective camera:
     //   Field of view: 75 degrees
     //   Screen aspect ration 4:3
@@ -61,8 +61,8 @@ export default class App {
     //this.loadDeerLeft();
     //this.loadDeerRight();
     //this.loadPoopingDog();
-    //this.placeTreeLeft(); 
-    //this.placeTreeRight(); 
+    //this.placeTreeLeft();
+    //this.placeTreeRight();
 
     //this.axesHelper = new THREE.AxesHelper(100);
     //this.scene.add(this.axesHelper);
@@ -73,17 +73,44 @@ export default class App {
     //requestAnimationFrame(() => this.appearRandomObject());
   }
 
+  gameOver() {
+    alert("You Crashed! Your Score: " + this.score + "\n" + "Refresh the page to play again");
+  }
+
   render() {
-    if (this.score == 1000) { alert("You win! Refresh the page to play again."); }
-    else {
+    if (this.score == 100) {
+      alert("You win! Refresh the page to play again.");
+    } else {
       this.renderer.render(this.scene, this.camera);
       this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
       this.onArrowPressed(); //moved key strokes to its own function for simplicity
       this.randomObject(time);
       time += 1;
-      if (time % second == 0) { this.score += (1 * scoreMult); }
+      if (time % second == 0) {
+        this.score += (1 * scoreMult);
+      }
       var lblScore = document.getElementById('lblScore');
       lblScore.innerHTML = this.score;
+    }
+
+    /*for (var i = 0; i < this.collidables.length - 1; i++) {
+      console.log(this.collidables[i]);
+    }*/
+
+    if (this.detectCollisions(this.collidables) == true) {
+      console.log("collision");
+      this.gameOver();
+    }
+
+    for (var i = 0; i < this.collidables.length; i++) {
+      var collidable = this.collidables[i];
+      if (this.carGroup.position.x == (collidable.position.x) &&
+        this.carGroup.position.z == (collidable.position.z)) {
+        console.log("collision");
+
+      } else {
+        //console.log("no collision");
+      }
     }
 
     requestAnimationFrame(() => this.render());
@@ -229,6 +256,7 @@ export default class App {
     }
 
     this.rotateObject(this.rancarGroup, 0, 90, 0);
+    this.collidables.push(this.rancarGroup);
     this.scene.add(this.rancarGroup);
 
     requestAnimationFrame(() => this.randomCarRender());
@@ -255,8 +283,7 @@ export default class App {
     if (this.rancarGroup.position.z < 300) {
       this.rancarGroup.translateX(-1);
       this.rancarGroup.translateY(-0.066);
-    }
-    else {
+    } else {
       this.scene.remove(this.rancarGroup);
       this.createRandomCar();
     }
@@ -288,6 +315,7 @@ export default class App {
           default:
             break;
         }
+        this.collidables.push(this.dog);
         this.scene.add(this.dog);
 
 
@@ -310,8 +338,7 @@ export default class App {
     if (this.dog.position.z < 300) {
       this.dog.translateZ(2);
       this.dog.translateY(-0.09);
-    }
-    else {
+    } else {
       this.scene.remove(this.dog);
       cancelAnimationFrame(() => this.poopingDogTranslation());
     }
@@ -335,6 +362,7 @@ export default class App {
         this.deerR.translateX(40);
         this.deerR.translateZ(150);
         this.deerR.translateY(-3);
+        this.collidables.push(this.deerR);
         this.scene.add(this.deerR);
 
         requestAnimationFrame(() => this.moveDeerRight());
@@ -358,12 +386,10 @@ export default class App {
       this.deerR.translateX(-0.6);
       this.deerR.translateZ(.7);
       this.deerR.translateY(-0.04);
-    }
-    else {
+    } else {
       cancelAnimationFrame(() => this.moveDeerRight());
       this.scene.remove(this.deerR);
     }
-
     requestAnimationFrame(() => this.moveDeerRight());
   }
 
@@ -380,6 +406,7 @@ export default class App {
         this.deerL.translateZ(150);
         this.deerL.translateY(-3);
         this.deerL.rotateY(8);
+        this.collidables.push(this.deerL);
         this.scene.add(this.deerL);
 
         requestAnimationFrame(() => this.moveDeerLeft());
@@ -403,8 +430,7 @@ export default class App {
       this.deerL.translateX(-0.6);
       this.deerL.translateZ(.35);
       this.deerL.translateY(-0.04);
-    }
-    else {
+    } else {
       cancelAnimationFrame(() => this.moveDeerLeft());
       this.scene.remove(this.deerL);
     }
@@ -419,7 +445,7 @@ export default class App {
         'app/js/models/OldJerryCan/scene.gltf',
         (gltf) => {
           // called when the resource is loaded
-          //gltf.scene.scale.set(5,5,5); 
+          //gltf.scene.scale.set(5,5,5);
           this.boost = gltf.scene;
           this.boost.name = 'gascan';
           this.boost.translateZ(100);
@@ -437,6 +463,7 @@ export default class App {
               break;
           }
 
+          this.collidables.push(this.boost);
           this.scene.add(this.boost);
 
           requestAnimationFrame(() => this.moveGasCan());
@@ -459,11 +486,12 @@ export default class App {
     if (this.boost.position.z < 230) {
       this.boost.translateZ(.7);
       this.boost.translateY(-0.15);
-      if (this.boost.position.x > 0) { this.boost.translateX(-.08); }
-      else { this.boost.translateX(.08); }
-    }
-
-    else {
+      if (this.boost.position.x > 0) {
+        this.boost.translateX(-.08);
+      } else {
+        this.boost.translateX(.08);
+      }
+    } else {
       this.scene.remove(this.boost);
       cancelAnimationFrame(() => this.moveGasCan());
     }
@@ -587,6 +615,7 @@ export default class App {
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
     this.myTreeR.translateY(20);
+    this.collidables.push(this.myTreeR);
     this.scene.add(this.myTreeR);
 
     requestAnimationFrame(() => this.handleTreeMovementRight());
@@ -598,6 +627,7 @@ export default class App {
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
+    this.collidables.push(this.myTreeL);
     this.scene.add(this.myTreeL);
 
     requestAnimationFrame(() => this.handleTreeMovementLeft());
@@ -615,9 +645,8 @@ export default class App {
       this.myTreeL.translateZ(1);
       this.myTreeL.translateY(-0.075);
       this.myTreeL.translateX(0.062);
-      //this.placeTreeLeft(); 
-    }
-    else {
+      //this.placeTreeLeft();
+    } else {
       cancelAnimationFrame(() => this.handleTreeMovementLeft());
       this.scene.remove(this.myTreeL);
     }
@@ -636,9 +665,7 @@ export default class App {
       this.myTreeR.translateZ(1);
       this.myTreeR.translateY(-0.075);
       this.myTreeR.translateX(-0.062);
-    }
-
-    else {
+    } else {
       cancelAnimationFrame(() => this.handleTreeMovementRight());
       this.scene.remove(this.myTreeR);
     }
@@ -680,7 +707,7 @@ export default class App {
     object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 
-  //appear objects at random. 
+  //appear objects at random.
   randomObject(temp = 0) {
     var random = Math.floor(Math.random() * 5); //0-4
     var ran = Math.floor(Math.random() * 2); // 0-1 (two options)
@@ -690,18 +717,38 @@ export default class App {
       time = 0;
       switch (random) {
         case 0: //deer
-          if (!this.scene.getObjectByName('leftDeer')) { if (ran === 0) { this.loadDeerLeft(); } }
-          if (!this.scene.getObjectByName('rightDeer')) { if (ran === 1) { this.loadDeerRight(); } }
+          if (!this.scene.getObjectByName('leftDeer')) {
+            if (ran === 0) {
+              this.loadDeerLeft();
+            }
+          }
+          if (!this.scene.getObjectByName('rightDeer')) {
+            if (ran === 1) {
+              this.loadDeerRight();
+            }
+          }
           break;
         case 1: //tree
-          if (!this.scene.getObjectByName('leftTree')) { if (ran === 0) { this.placeTreeLeft(); } }
-          if (!this.scene.getObjectByName('rightTree')) { if (ran === 1) { this.placeTreeRight(); } }
+          if (!this.scene.getObjectByName('leftTree')) {
+            if (ran === 0) {
+              this.placeTreeLeft();
+            }
+          }
+          if (!this.scene.getObjectByName('rightTree')) {
+            if (ran === 1) {
+              this.placeTreeRight();
+            }
+          }
           break;
         case 2: //dog
-          if (!this.scene.getObjectByName('dog')) { this.loadPoopingDog(); }
+          if (!this.scene.getObjectByName('dog')) {
+            this.loadPoopingDog();
+          }
           break;
         case 3: //pooping dog
-          if (!this.scene.getObjectByName('gascan')) { this.loadGasCan(ran); }
+          if (!this.scene.getObjectByName('gascan')) {
+            this.loadGasCan(ran);
+          }
           break;
         default:
           break;
@@ -712,18 +759,20 @@ export default class App {
   // Collision Detection
   // we would use this.carGroup instead of hero
 
-  detectCollisions(objects) {
+  detectCollisions() {
     var origin = this.carGroup.position.clone();
 
-    for (var v = 0, vMax = this.carGroup.geometry.vertices.length; v < vMax; v += 1) {
-      var localVertex = this.carGroup.geometry.vertices[v].clone();
-      var globalVertex = localVertex.applyMatrix4(this.carGroup.matrix);
-      var directionVector = globalVertex.sub(this.carGroup.position);
+    var vMax = this.carGroup.children[0].children[0].geometry.vertices.length;
+    for (var v = 0; v < vMax; v += 1) {
+      var localVertex = this.carGroup.children[0].children[0].geometry.vertices[v].clone();
+      var globalVertex = localVertex.applyMatrix4(this.carGroup.children[0].children[0].matrix);
+      var directionVector = globalVertex.sub(this.carGroup.children[0].children[0].position);
 
       var ray = new THREE.Raycaster(origin, directionVector.clone().normalize());
-      var intersections = ray.intersectObjects(objects);
+      var intersections = ray.intersectObjects(this.collidables, true);
       if (intersections.length > 0 &&
         intersections[0].distance < directionVector.length()) {
+        console.log("collision");
         return true;
       }
     }
