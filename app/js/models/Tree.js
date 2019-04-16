@@ -4,7 +4,7 @@ export default class Tree extends Group {
     constructor () { // number of spokes on the wheel
       super();    // invoke the super class constructor
   
-      const TRUNK_RADIUS = 5;
+      const TRUNK_RADIUS = 3;
       const TRUNK_HEIGHT = 15; 
       //const TIRE_THICKNESS = 20;
       const trunkGeo = new CylinderGeometry(TRUNK_RADIUS, TRUNK_RADIUS, TRUNK_HEIGHT, 30, 10);
@@ -14,7 +14,7 @@ export default class Tree extends Group {
       this.add (trunk);  // place the torus in the group
 
       const TREE_RADIUS = 8; 
-      const TREE_HEIGHT = 20; 
+      const TREE_HEIGHT = 25; 
       const treeGeo = new ConeGeometry(TREE_RADIUS, TREE_HEIGHT, 30, 10); 
       const treeMat = new MeshPhongMaterial({color: 0x66cc00}); 
       const tree = new Mesh (treeGeo, treeMat); 

@@ -52,8 +52,8 @@ export default class App {
 
     const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightTwo.position.set(-10, -40, -100);
-    this.scene.add(lightTwo);
- */
+    this.scene.add(lightTwo);*/
+
 
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
     //this.loadPoopingDog();
@@ -63,6 +63,7 @@ export default class App {
 
     this.createUserCar();
     this.createRoad();
+    this.createGrass();
 
     this.placeTreeRight();
     this.placeTreeLeft(); 
@@ -83,12 +84,12 @@ export default class App {
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
     if (this.myTreeR.position.z < 300) { //when tree is on right side
       this.myTreeR.translateZ(1);
-      this.myTreeR.translateY(-0.035);
+      this.myTreeR.translateY(-0.075);
       this.myTreeR.translateX(-0.062);
     }
     if (this.myTreeL.position.z < 300) { //when tree is on right side
       this.myTreeL.translateZ(1);
-      this.myTreeL.translateY(-0.035);
+      this.myTreeL.translateY(-0.075);
       this.myTreeL.translateX(0.062);
     }
 
@@ -294,7 +295,7 @@ export default class App {
 
   //moves the car to the left
   moveToLeft() {
-    if (this.carGroup.position.x < -40) {
+    if (this.carGroup.position.x < -41) {
       return;
     } else {
       this.carGroup.translateZ(-21);
@@ -304,7 +305,7 @@ export default class App {
 
   // moves the car to the right
   moveToRight() {
-    if (this.carGroup.position.x > 40) {
+    if (this.carGroup.position.x > 41) {
       return;
     } else {
       this.carGroup.translateZ(21);
@@ -378,8 +379,8 @@ export default class App {
 
     planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
 
-    planeMaterial = new THREE.MeshLambertMaterial({
-      color: 0x696969 //some random color for now
+    planeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x2C2D2D //some random color for now
     });
 
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -395,6 +396,7 @@ export default class App {
     this.myTreeR = new Tree();
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
+    this.myTreeR.translateY(20); 
     this.scene.add(this.myTreeR);
   }
 
@@ -402,7 +404,35 @@ export default class App {
     this.myTreeL = new Tree();
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
+    this.myTreeL.translateY(20); 
     this.scene.add(this.myTreeL);
+  }
+
+  createGrass() {
+    var leftSideGeometry = {},
+      leftSideMaterial = {};
+
+    const PLANE_WIDTH = 400,
+      PLANE_LENGTH = 500,
+      PADDING = PLANE_WIDTH / 5 * 2;
+
+    leftSideGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
+
+    leftSideMaterial = new THREE.MeshBasicMaterial({
+      color: 0x488214
+    });
+
+    this.leftSide = new THREE.Mesh(leftSideGeometry, leftSideMaterial);
+    this.leftSide.rotation.x = 1.65;
+    this.leftSide.receiveShadow = true;
+    this.leftSide.position.x = -235;
+    this.leftSide.position.y = 1;
+    this.leftSide.translateZ(10);
+
+    this.rightSide = this.leftSide.clone();
+    this.rightSide.position.x = 235;
+
+    this.scene.add(this.leftSide, this.rightSide);
   }
 
   //rotate an object
