@@ -74,7 +74,7 @@ export default class App {
   }
 
   render() {
-    if (this.score == 100) { alert("You win! Refresh the page to play again."); }
+    if (this.score == 1000) { alert("You win! Refresh the page to play again."); }
     else {
       this.renderer.render(this.scene, this.camera);
       this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
