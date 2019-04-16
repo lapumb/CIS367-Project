@@ -52,8 +52,8 @@ export default class App {
 
     const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightTwo.position.set(-10, -40, -100);
-    this.scene.add(lightTwo);
- */
+    this.scene.add(lightTwo);*/
+
 
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
     //this.createCar();
@@ -64,6 +64,7 @@ export default class App {
 
     this.createCar();
     this.createRoad();
+    //this.createGrass();
 
     this.placeTree();
 
@@ -281,7 +282,7 @@ export default class App {
 
   //moves the car to the left
   moveToLeft() {
-    if (this.carGroup.position.x < -20) {
+    if (this.carGroup.position.x < -41) {
       return;
     } else {
       this.carGroup.translateZ(-21);
@@ -291,7 +292,7 @@ export default class App {
 
   // moves the car to the right
   moveToRight() {
-    if (this.carGroup.position.x > 20) {
+    if (this.carGroup.position.x > 41) {
       return;
     } else {
       this.carGroup.translateZ(21);
@@ -365,8 +366,8 @@ export default class App {
 
     planeGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
 
-    planeMaterial = new THREE.MeshLambertMaterial({
-      color: 0x696969 //some random color for now
+    planeMaterial = new THREE.MeshBasicMaterial({
+      color: 0x2C2D2D //some random color for now
     });
 
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -375,6 +376,33 @@ export default class App {
     this.plane.receiveShadow = true;
     this.plane.translateZ(10);
     this.scene.add(this.plane);
+  }
+
+  createGrass() {
+    var leftSideGeometry = {},
+      leftSideMaterial = {};
+
+    const PLANE_WIDTH = 400,
+      PLANE_LENGTH = 500,
+      PADDING = PLANE_WIDTH / 5 * 2;
+
+    leftSideGeometry = new THREE.BoxGeometry(PLANE_WIDTH, PLANE_LENGTH + PLANE_LENGTH / 10, 1);
+
+    leftSideMaterial = new THREE.MeshBasicMaterial({
+      color: 0x488214
+    });
+
+    this.leftSide = new THREE.Mesh(leftSideGeometry, leftSideMaterial);
+    this.leftSide.rotation.x = 1.65;
+    this.leftSide.receiveShadow = true;
+    this.leftSide.position.x = -235;
+    this.leftSide.position.y = 1;
+    this.leftSide.translateZ(10);
+
+    this.rightSide = this.leftSide.clone();
+    this.rightSide.position.x = 235;
+
+    this.scene.add(this.leftSide, this.rightSide);
   }
 
   placeTree() {
