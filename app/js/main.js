@@ -5,6 +5,8 @@ import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
 //import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally?
+var time = 0;
+var speedMult = 1; //multiplier for gas tank, change to .5 so everything slows down
 
 export default class App {
   constructor() {
@@ -49,29 +51,26 @@ export default class App {
     this.scene.add(backLight);
 
     //adding light so I can see what I am doing
-    /*const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+    const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 100);
     this.scene.add(lightOne);
-
+/*
     const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightTwo.position.set(-10, -40, -100);
     this.scene.add(lightTwo);*/
 
-    //this.loadPoopingDog();
-    //this.loadDeerRight();
-    //this.loadDeerLeft(); 
-    //this.loadGasCan();
-    //this.loadDog();
-
     this.createUserCar();
     this.createRoad();
     this.createGrass();
-    this.createRandomCar();
-    this.loadDeerLeft(); 
-    this.loadDeerRight(); 
+    //this.createRandomCar();
+    //this.loadDeerLeft();
+    //this.loadDeerRight();
+    //this.loadPoopingDog();
+    //this.placeTreeLeft(); 
+    //this.placeTreeRight(); 
 
-    this.axesHelper = new THREE.AxesHelper(100);
-    this.scene.add(this.axesHelper);
+    //this.axesHelper = new THREE.AxesHelper(100);
+    //this.scene.add(this.axesHelper);
 
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
@@ -101,23 +100,6 @@ export default class App {
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
     this.tracker.handleResize();
-  }
-
-  //handling tree movement
-  handleTreeMovementLeft(object) {
-    if (this.myTreeL.position.z < 300) { //when tree is on right side
-      this.myTreeL.translateZ(1);
-      this.myTreeL.translateY(-0.075);
-      this.myTreeL.translateX(0.062);
-    }
-  }
-
-  handleTreeMovementRight() {
-    if (this.myTreeR.position.z < 300) { //when tree is on right side
-      this.myTreeR.translateZ(1);
-      this.myTreeR.translateY(-0.075);
-      this.myTreeR.translateX(-0.062);
-    }
   }
 
   //creates car
@@ -233,16 +215,16 @@ export default class App {
     this.rancarGroup.translateY(18);
 
     //randomly place in a lane
-    var lane = Math.floor(Math.random() * 3); //0-3
-    switch(lane) {
+    var lane = Math.floor(Math.random() * 3); //0-2
+    switch (lane) {
       case 0:
         this.rancarGroup.translateX(21);
-        break; 
+        break;
       case 1:
         this.rancarGroup.translateX(-21);
         break;
       default:
-        break; 
+        break;
     }
 
     this.rotateObject(this.rancarGroup, 0, 90, 0);
@@ -269,14 +251,25 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
+/*
+    if (time === 600) { //makes deer less laggy
+      var random = Math.floor(Math.random() * 3); //0-2
+      if (random === 1) { cancelAnimationFrame(() => this.moveDeerLeft()); this.loadDeerLeft(); }
+      else { cancelAnimationFrame(() => this.moveDeerRight()); this.loadDeerRight(); }
+      time = 0;
+    }
+    else {
+      time += 1;
+    } 
+*/
 
     if (this.rancarGroup.position.z < 300) {
       this.rancarGroup.translateX(-1);
-      this.rancarGroup.translateY(-0.066); 
+      this.rancarGroup.translateY(-0.066);
     }
     else {
       this.scene.remove(this.rancarGroup);
-      this.createRandomCar(); 
+      this.createRandomCar();
     }
 
     requestAnimationFrame(() => this.randomCarRender());
@@ -288,9 +281,27 @@ export default class App {
       'app/js/models/PoopingDog/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
-        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5);
-        this.scene.add(gltf.scene);
+        gltf.scene.scale.set(8, 8, 8);
+        this.dog = gltf.scene;
+        this.dog.translateZ(-300); 
+        this.dog.translateY(10); 
+
+        //randomly place in a lane
+        var lane = Math.floor(Math.random() * 3); //0-2
+        switch (lane) {
+          case 0:
+            this.dog.translateX(21);
+            break;
+          case 1:
+            this.dog.translateX(-21);
+            break;
+          default:
+            break;
+        }
+        this.scene.add(this.dog);
+
+
+        requestAnimationFrame(() => this.poopingDogTranslation());
       },
       (xhr) => {
         // called while loading is progressing
@@ -301,6 +312,23 @@ export default class App {
         console.error('An error happened', error);
       },
     );
+  }
+
+  poopingDogTranslation() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    if (this.dog.position.z < 300) {
+      this.dog.translateZ(2);
+      this.dog.translateY(-0.09);
+    }
+    else {
+      this.scene.remove(this.dog);
+      cancelAnimationFrame(() => this.poopingDogTranslation());
+    }
+
+
+    requestAnimationFrame(() => this.poopingDogTranslation());
   }
 
   //loads the whitetail buck
@@ -337,12 +365,14 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    if(this.deerR.position.z < 300) {
-    this.deerR.translateX(-0.4);
-    this.deerR.translateZ(.3);
+    if (this.deerR.position.z < 230) {
+      this.deerR.translateX(-0.6);
+      this.deerR.translateZ(.7);
+      this.deerR.translateY(-0.01);
     }
     else {
-      this.scene.remove(this.deerR); 
+      cancelAnimationFrame(() => this.moveDeerRight());
+      this.scene.remove(this.deerR);
     }
 
     requestAnimationFrame(() => this.moveDeerRight());
@@ -380,35 +410,17 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    if(this.deerL.position.z < 230) {
-      this.deerL.translateX(-0.4);
-      this.deerL.translateZ(.3);
+    if (this.deerL.position.z < 230) {
+      this.deerL.translateX(-0.6);
+      this.deerL.translateZ(.35);
+      this.deerL.translateY(-0.01);
     }
     else {
+      cancelAnimationFrame(() => this.moveDeerLeft());
       this.scene.remove(this.deerL);
     }
 
     requestAnimationFrame(() => this.moveDeerLeft());
-  }
-
-  //loads a dog
-  loadDog() {
-    this.loader.load(
-      'app/js/models/Dog/scene.gltf',
-      (gltf) => {
-        // called when the resource is loaded
-        // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        this.scene.add(gltf.scene);
-      },
-      (xhr) => {
-        // called while loading is progressing
-        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
-      },
-      (error) => {
-        // called when loading has errors
-        console.error('An error happened', error);
-      },
-    );
   }
 
   //loads gas can (boost?)
@@ -418,7 +430,6 @@ export default class App {
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
-        //gltf.scene.translateX(5);
         this.scene.add(gltf.scene);
       },
       (xhr) => {
@@ -548,6 +559,8 @@ export default class App {
     this.myTreeR.translateX(70);
     this.myTreeR.translateY(20);
     this.scene.add(this.myTreeR);
+
+    requestAnimationFrame(() => this.handleTreeMovementRight());
   }
 
   placeTreeLeft() {
@@ -556,6 +569,53 @@ export default class App {
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
     this.scene.add(this.myTreeL);
+
+    requestAnimationFrame(() => this.handleTreeMovementLeft());
+  }
+
+  //handling tree movement
+  handleTreeMovementLeft() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    if(this.myTreeL.position.z === 200) {
+      this.placeTreeLeft(); 
+    }
+
+    if (this.myTreeL.position.z < 300) { //when tree is on right side
+      this.myTreeL.translateZ(1);
+      this.myTreeL.translateY(-0.075);
+      this.myTreeL.translateX(0.062);
+      //this.placeTreeLeft(); 
+    }
+    else{
+      cancelAnimationFrame(() => this.handleTreeMovementLeft());
+      this.scene.remove(this.myTreeL);
+    }
+
+    requestAnimationFrame(() => this.handleTreeMovementLeft());
+  }
+
+  handleTreeMovementRight() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    if(this.myTreeR.position.z === 200) {
+      this.placeTreeRight(); 
+    }
+
+    if (this.myTreeR.position.z < 300) { //when tree is on right side
+      this.myTreeR.translateZ(1);
+      this.myTreeR.translateY(-0.075);
+      this.myTreeR.translateX(-0.062);
+    }
+    
+    else{
+      cancelAnimationFrame(() => this.handleTreeMovementRight());
+      this.scene.remove(this.myTreeR);
+    }
+
+    requestAnimationFrame(() => this.handleTreeMovementRight());
   }
 
   createGrass() {
