@@ -58,14 +58,14 @@ export default class App {
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(1));
     //this.createCar();
     //this.loadPoopingDog();
-    //this.loadDeer();
+    this.loadDeer();
     //this.loadGasCan();
     //this.loadDog();
 
     this.createCar();
     this.createRoad();
 
-
+     this.placeTree();
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -81,6 +81,11 @@ export default class App {
     //var count = 0; //variable for key strokes
     //this.rotateWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
+    if (this.myTree.position.z < 300) { //when tree is on right side
+      this.myTree.translateZ(1);
+      this.myTree.translateY(-0.035);
+      this.myTree.translateX(-.062);
+    }
 
     requestAnimationFrame(() => this.render());
   }
@@ -183,7 +188,12 @@ export default class App {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
         //gltf.scene.translateX(5);
-        this.scene.add(gltf.scene);
+        this.deer = gltf.scene;
+        this.deer.translateX(40); 
+        this.deer.translateZ(-10); 
+        this.scene.add(this.deer);
+
+        requestAnimationFrame(() => this.moveDeer());
       },
       (xhr) => {
         // called while loading is progressing
@@ -196,6 +206,15 @@ export default class App {
     );
   }
 
+  moveDeer() {
+    this.renderer.render(this.scene, this.camera);
+    this.tracker.update();
+
+    this.deer.translateX(-1); 
+    this.deer.translateZ(1);
+
+    requestAnimationFrame(() => this.moveDeer());
+ }
   loadDog() {
     this.loader.load(
       'app/js/models/Dog/scene.gltf',
@@ -212,7 +231,7 @@ export default class App {
         // called when loading has errors
         console.error('An error happened', error);
       },
-    );
+    ); 
   }
 
   loadGasCan() {
@@ -298,24 +317,24 @@ export default class App {
 
       document.addEventListener('keydown', event => {
         const key = event.keyCode;
-        if (key == 37) { //left arrow pressed
+        if (key === 37) { //left arrow pressed
           if (count < 1) {
             this.moveToLeft();
             this.leftTurn();
             count += 1;
           }
         }
-        if (key == 39) { //right arrow pressed
+        if (key === 39) { //right arrow pressed
           if (count < 1) {
             this.moveToRight();
             this.rightTurn();
             count += 1;
           }
         }
-        if (key == 38) { //right arrow pressed
+        if (key === 38) { //up arrow pressed
           if (count < 1) {
             this.jump();
-            this.rightTurn();
+            //this.rightTurn();
             count += 1;
           }
         }
@@ -365,6 +384,13 @@ export default class App {
     this.plane.receiveShadow = true;
     this.plane.translateZ(10);
     this.scene.add(this.plane);
+  }
+
+  placeTree() {
+    this.myTree = new Tree(); 
+    this.myTree.translateZ(-300);
+    this.myTree.translateX(70);
+    this.scene.add(this.myTree);
   }
 
   rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
