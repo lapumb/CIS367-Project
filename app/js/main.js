@@ -4,7 +4,9 @@ import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
-import { isNull } from 'util';
+import {
+  isNull
+} from 'util';
 //import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally?
 var time = 0;
 var speedMult = 1; //multiplier for gas tank, change to .5 so everything slows down
@@ -23,7 +25,7 @@ export default class App {
     this.rotZ1 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-10)); //user ties
     this.rotZ2 = new THREE.Matrix4().makeRotationZ(THREE.Math.degToRad(-5)); //opposing car tires
 
-
+    this.collidables = [];
     // Use perspective camera:
     //   Field of view: 75 degrees
     //   Screen aspect ration 4:3
@@ -68,8 +70,8 @@ export default class App {
     //this.loadDeerLeft();
     //this.loadDeerRight();
     //this.loadPoopingDog();
-    //this.placeTreeLeft(); 
-    //this.placeTreeRight(); 
+    //this.placeTreeLeft();
+    //this.placeTreeRight();
 
     //this.axesHelper = new THREE.AxesHelper(100);
     //this.scene.add(this.axesHelper);
@@ -87,6 +89,24 @@ export default class App {
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
     this.randomObject(time);
     time += 1;
+
+    /*for (var i = 0; i < this.collidables.length - 1; i++) {
+      console.log(this.collidables[i]);
+    }*/
+
+    /*if (this.detectCollisions(this.collidables) == true) {
+      console.log("collision");
+    }*/
+
+    for (var i = 0; i < this.collidables.length; i++) {
+      var collidable = this.collidables[i];
+      if (this.carGroup.position.x < (collidable.position.x - 5) &&
+        this.carGroup.position.x > (collidable.position.x + 5)) {
+        console.log("collision");
+      } else {
+        console.log("no collision");
+      }
+    }
 
     requestAnimationFrame(() => this.render());
   }
@@ -259,8 +279,7 @@ export default class App {
     if (this.rancarGroup.position.z < 300) {
       this.rancarGroup.translateX(-1);
       this.rancarGroup.translateY(-0.066);
-    }
-    else {
+    } else {
       this.scene.remove(this.rancarGroup);
       this.createRandomCar();
     }
@@ -315,8 +334,7 @@ export default class App {
     if (this.dog.position.z < 300) {
       this.dog.translateZ(2);
       this.dog.translateY(-0.09);
-    }
-    else {
+    } else {
       this.scene.remove(this.dog);
       cancelAnimationFrame(() => this.poopingDogTranslation());
     }
@@ -336,10 +354,11 @@ export default class App {
         //gltf.scene.scale.set(2, 2, 2); //this is how you scale
         gltf.scene.scale.set(.3, .3, .3);
         this.deerR = gltf.scene;
-        this.deerR.name = 'rightDeer'; 
+        this.deerR.name = 'rightDeer';
         this.deerR.translateX(40);
         this.deerR.translateZ(150);
         this.deerR.translateY(-3);
+        this.collidables.push(this.deerR);
         this.scene.add(this.deerR);
 
         requestAnimationFrame(() => this.moveDeerRight());
@@ -364,8 +383,7 @@ export default class App {
       this.deerR.translateX(-0.6);
       this.deerR.translateZ(.7);
       this.deerR.translateY(-0.04);
-    }
-    else {
+    } else {
       cancelAnimationFrame(() => this.moveDeerRight());
       this.scene.remove(this.deerR);
     }
@@ -381,7 +399,7 @@ export default class App {
         // called when the resource is loaded
         gltf.scene.scale.set(.3, .3, .3);
         this.deerL = gltf.scene;
-        this.deerL.name = 'leftDeer'; 
+        this.deerL.name = 'leftDeer';
         this.deerL.translateX(-40);
         this.deerL.translateZ(150);
         this.deerL.translateY(-3);
@@ -410,8 +428,7 @@ export default class App {
       this.deerL.translateX(-0.6);
       this.deerL.translateZ(.35);
       this.deerL.translateY(-0.04);
-    }
-    else {
+    } else {
       cancelAnimationFrame(() => this.moveDeerLeft());
       this.scene.remove(this.deerL);
     }
@@ -426,9 +443,9 @@ export default class App {
         'app/js/models/OldJerryCan/scene.gltf',
         (gltf) => {
           // called when the resource is loaded
-          //gltf.scene.scale.set(5,5,5); 
+          //gltf.scene.scale.set(5,5,5);
           this.boost = gltf.scene;
-          this.boost.name = 'gascan'; 
+          this.boost.name = 'gascan';
           this.boost.translateZ(100);
 
           //randomly place in a lane
@@ -467,11 +484,12 @@ export default class App {
     if (this.boost.position.z < 230) {
       this.boost.translateZ(.7);
       this.boost.translateY(-0.15);
-      if (this.boost.position.x > 0) { this.boost.translateX(-.08); }
-      else { this.boost.translateX(.08); }
-    }
-
-    else {
+      if (this.boost.position.x > 0) {
+        this.boost.translateX(-.08);
+      } else {
+        this.boost.translateX(.08);
+      }
+    } else {
       this.scene.remove(this.boost);
       cancelAnimationFrame(() => this.moveGasCan());
     }
@@ -591,10 +609,11 @@ export default class App {
   //placing tree on the right side of the road
   placeTreeRight() {
     this.myTreeR = new Tree();
-    this.myTreeR.name = 'rightTree'; 
+    this.myTreeR.name = 'rightTree';
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
     this.myTreeR.translateY(20);
+    this.collidables.push(this.myTreeR);
     this.scene.add(this.myTreeR);
 
     requestAnimationFrame(() => this.handleTreeMovementRight());
@@ -602,7 +621,7 @@ export default class App {
 
   placeTreeLeft() {
     this.myTreeL = new Tree();
-    this.myTreeL.name = 'leftTree'; 
+    this.myTreeL.name = 'leftTree';
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
@@ -624,9 +643,8 @@ export default class App {
       this.myTreeL.translateZ(1);
       this.myTreeL.translateY(-0.075);
       this.myTreeL.translateX(0.062);
-      //this.placeTreeLeft(); 
-    }
-    else {
+      //this.placeTreeLeft();
+    } else {
       cancelAnimationFrame(() => this.handleTreeMovementLeft());
       this.scene.remove(this.myTreeL);
     }
@@ -646,9 +664,7 @@ export default class App {
       this.myTreeR.translateZ(1);
       this.myTreeR.translateY(-0.075);
       this.myTreeR.translateX(-0.062);
-    }
-
-    else {
+    } else {
       cancelAnimationFrame(() => this.handleTreeMovementRight());
       this.scene.remove(this.myTreeR);
     }
@@ -690,7 +706,7 @@ export default class App {
     object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 
-  //appear objects at random. 
+  //appear objects at random.
   randomObject(temp = 0) {
     var random = Math.floor(Math.random() * 5); //0-4
     var ran = Math.floor(Math.random() * 2); // 0-1 (two options)
@@ -700,18 +716,38 @@ export default class App {
       time = 0;
       switch (random) {
         case 0: //deer
-          if(!this.scene.getObjectByName('leftDeer')) { if (ran === 0) { this.loadDeerLeft(); } }
-          if(!this.scene.getObjectByName('rightDeer')) { if(ran === 1) { this.loadDeerRight(); } }
+          if (!this.scene.getObjectByName('leftDeer')) {
+            if (ran === 0) {
+              this.loadDeerLeft();
+            }
+          }
+          if (!this.scene.getObjectByName('rightDeer')) {
+            if (ran === 1) {
+              this.loadDeerRight();
+            }
+          }
           break;
         case 1: //tree
-          if(!this.scene.getObjectByName('leftTree')) { if (ran === 0) { this.placeTreeLeft(); } }
-          if(!this.scene.getObjectByName('rightTree')) { if(ran === 1) { this.placeTreeRight(); } }
+          if (!this.scene.getObjectByName('leftTree')) {
+            if (ran === 0) {
+              this.placeTreeLeft();
+            }
+          }
+          if (!this.scene.getObjectByName('rightTree')) {
+            if (ran === 1) {
+              this.placeTreeRight();
+            }
+          }
           break;
         case 2: //dog
-          if(!this.scene.getObjectByName('dog')) { this.loadPoopingDog(); }
+          if (!this.scene.getObjectByName('dog')) {
+            this.loadPoopingDog();
+          }
           break;
         case 3: //pooping dog
-          if(!this.scene.getObjectByName('gascan')) { this.loadGasCan(ran); }
+          if (!this.scene.getObjectByName('gascan')) {
+            this.loadGasCan(ran);
+          }
           break;
         default:
           break;
@@ -722,18 +758,20 @@ export default class App {
   // Collision Detection
   // we would use this.carGroup instead of hero
 
-  detectCollisions(objects) {
+  detectCollisions() {
     var origin = this.carGroup.position.clone();
 
-    for (var v = 0, vMax = this.carGroup.geometry.vertices.length; v < vMax; v += 1) {
-      var localVertex = this.carGroup.geometry.vertices[v].clone();
-      var globalVertex = localVertex.applyMatrix4(this.carGroup.matrix);
-      var directionVector = globalVertex.sub(this.carGroup.position);
+    var vMax = this.carGroup.children[0].children[0].geometry.vertices.length;
+    for (var v = 0; v < vMax; v += 1) {
+      var localVertex = this.carGroup.children[0].children[0].geometry.vertices[v].clone();
+      var globalVertex = localVertex.applyMatrix4(this.carGroup.children[0].children[0].matrix);
+      var directionVector = globalVertex.sub(this.carGroup.children[0].children[0].position);
 
       var ray = new THREE.Raycaster(origin, directionVector.clone().normalize());
-      var intersections = ray.intersectObjects(objects);
+      var intersections = ray.intersectObjects(this.collidables[0].children[0]);
       if (intersections.length > 0 &&
         intersections[0].distance < directionVector.length()) {
+        console.log("collision");
         return true;
       }
     }
