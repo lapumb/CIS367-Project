@@ -65,10 +65,7 @@ export default class App {
     this.createCar();
     this.createRoad();
 
-<<<<<<< HEAD
-=======
-     this.placeTree();
->>>>>>> 14879a89a3f31d182b63dfd242d2239ae5ba8bda
+    this.placeTree();
 
     this.axesHelper = new THREE.AxesHelper(100);
     this.scene.add(this.axesHelper);
@@ -192,8 +189,8 @@ export default class App {
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
         //gltf.scene.translateX(5);
         this.deer = gltf.scene;
-        this.deer.translateX(40); 
-        this.deer.translateZ(-10); 
+        this.deer.translateX(40);
+        this.deer.translateZ(-10);
         this.scene.add(this.deer);
 
         requestAnimationFrame(() => this.moveDeer());
@@ -213,11 +210,12 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    this.deer.translateX(-1); 
+    this.deer.translateX(-1);
     this.deer.translateZ(1);
 
     requestAnimationFrame(() => this.moveDeer());
- }
+  }
+
   loadDog() {
     this.loader.load(
       'app/js/models/Dog/scene.gltf',
@@ -234,7 +232,7 @@ export default class App {
         // called when loading has errors
         console.error('An error happened', error);
       },
-    ); 
+    );
   }
 
   loadGasCan() {
@@ -283,24 +281,12 @@ export default class App {
 
   //moves the car to the left
   moveToLeft() {
-    if (this.carGroup.position.z < 170) {
-
-    } else {
-      this.carGroup.translateZ(-21);
-    }
+    this.carGroup.translateZ(-21);
   }
 
   // moves the car to the right
   moveToRight() {
     this.carGroup.translateZ(21);
-  }
-
-  jump() {
-    this.carGroup.translateY(15);
-  }
-
-  dropDown() {
-    this.carGroup.translateY(-15);
   }
   //rotating car wheels
   rotateWheels() {
@@ -338,16 +324,6 @@ export default class App {
             count += 1;
           }
         }
-<<<<<<< HEAD
-=======
-        if (key === 38) { //up arrow pressed
-          if (count < 1) {
-            this.jump();
-            //this.rightTurn();
-            count += 1;
-          }
-        }
->>>>>>> 14879a89a3f31d182b63dfd242d2239ae5ba8bda
       });
       document.addEventListener('keyup', event => {
         const key = event.keyCode;
@@ -391,7 +367,7 @@ export default class App {
   }
 
   placeTree() {
-    this.myTree = new Tree(); 
+    this.myTree = new Tree();
     this.myTree.translateZ(-300);
     this.myTree.translateX(70);
     this.scene.add(this.myTree);
@@ -406,29 +382,51 @@ export default class App {
   appearRandomObject() {
     var random = Math.floor(Math.random() * 11); //0-10
 
-    switch(random) {
+    switch (random) {
       case 0: //deer
-        break; 
+        break;
       case 1: //tree
-        break; 
+        break;
       case 2: //car
-        break; 
+        break;
       case 3: //pooping dog
         break;
       case 4: //deer
-        break; 
+        break;
       case 5: //tree
         break;
       case 6: //pooping dog
-        break; 
+        break;
       case 7: //car
-        break; 
+        break;
       case 8: //tree
-        break; 
+        break;
       case 9: //pooping dog
-        break; 
+        break;
       case 10: //gas can
         break;
     }
   }
+
+  // Collision Detection
+  // we would use this.carGroup instead of hero
+
+  /*detectCollisions( objects ) {
+  var origin = hero.position.clone();
+
+  for ( var v = 0, vMax = hero.geometry.vertices.length; v < vMax; v += 1 ) {
+    var localVertex = hero.geometry.vertices[ v ].clone();
+    var globalVertex = localVertex.applyMatrix4( hero.matrix );
+    var directionVector = globalVertex.sub( hero.position );
+
+    var ray = new THREE.Raycaster( origin, directionVector.clone().normalize() );
+    var intersections = ray.intersectObjects( objects );
+    if ( intersections.length > 0 &&
+        intersections[ 0 ].distance < directionVector.length() ) {
+      return true;
+    }
+  }
+  return false;
+} */
+
 }
