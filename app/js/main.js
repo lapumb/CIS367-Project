@@ -4,6 +4,7 @@ import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
+import { isNull } from 'util';
 //import Car2 from 'three/examples/js/Car.js';  -->> need to figure out how to define THREE globally?
 var time = 0;
 var speedMult = 1; //multiplier for gas tank, change to .5 so everything slows down
@@ -54,16 +55,16 @@ export default class App {
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 100);
     this.scene.add(lightOne);
-/*
-    const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-    lightTwo.position.set(-10, -40, -100);
-    this.scene.add(lightTwo);*/
+    /*
+        const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+        lightTwo.position.set(-10, -40, -100);
+        this.scene.add(lightTwo);*/
 
     this.createUserCar();
     this.createRoad();
     this.createGrass();
     //this.loadGasCan();
-    //this.createRandomCar();
+    this.createRandomCar();
     //this.loadDeerLeft();
     //this.loadDeerRight();
     //this.loadPoopingDog();
@@ -84,6 +85,8 @@ export default class App {
     this.tracker.update();
     this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
     this.onArrowPressed(); //moved key strokes to its own function for simplicity
+    this.randomObject(time);
+    time += 1;
 
     requestAnimationFrame(() => this.render());
   }
@@ -252,17 +255,6 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
     this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
-/*
-    if (time === 600) { //makes deer less laggy
-      var random = Math.floor(Math.random() * 3); //0-2
-      if (random === 1) { cancelAnimationFrame(() => this.moveDeerLeft()); this.loadDeerLeft(); }
-      else { cancelAnimationFrame(() => this.moveDeerRight()); this.loadDeerRight(); }
-      time = 0;
-    }
-    else {
-      time += 1;
-    } 
-*/
 
     if (this.rancarGroup.position.z < 300) {
       this.rancarGroup.translateX(-1);
@@ -272,7 +264,7 @@ export default class App {
       this.scene.remove(this.rancarGroup);
       this.createRandomCar();
     }
-
+    
     requestAnimationFrame(() => this.randomCarRender());
   }
 
@@ -284,8 +276,9 @@ export default class App {
         // called when the resource is loaded
         gltf.scene.scale.set(8, 8, 8);
         this.dog = gltf.scene;
-        this.dog.translateZ(-300); 
-        this.dog.translateY(10); 
+        this.dog.name = 'dog';
+        this.dog.translateZ(-300);
+        this.dog.translateY(10);
 
         //randomly place in a lane
         var lane = Math.floor(Math.random() * 3); //0-2
@@ -343,6 +336,7 @@ export default class App {
         //gltf.scene.scale.set(2, 2, 2); //this is how you scale
         gltf.scene.scale.set(.3, .3, .3);
         this.deerR = gltf.scene;
+        this.deerR.name = 'rightDeer'; 
         this.deerR.translateX(40);
         this.deerR.translateZ(150);
         this.deerR.translateY(-3);
@@ -387,6 +381,7 @@ export default class App {
         // called when the resource is loaded
         gltf.scene.scale.set(.3, .3, .3);
         this.deerL = gltf.scene;
+        this.deerL.name = 'leftDeer'; 
         this.deerL.translateX(-40);
         this.deerL.translateZ(150);
         this.deerL.translateY(-3);
@@ -425,41 +420,44 @@ export default class App {
   }
 
   //loads gas can (boost?)
-  loadGasCan() {
-    this.loader.load(
-      'app/js/models/OldJerryCan/scene.gltf',
-      (gltf) => {
-        // called when the resource is loaded
-        //gltf.scene.scale.set(5,5,5); 
-        this.boost = gltf.scene; 
-        this.boost.translateZ(100); 
+  loadGasCan(temp = 0) {
+    if (temp === 0) {
+      this.loader.load(
+        'app/js/models/OldJerryCan/scene.gltf',
+        (gltf) => {
+          // called when the resource is loaded
+          //gltf.scene.scale.set(5,5,5); 
+          this.boost = gltf.scene;
+          this.boost.name = 'gascan'; 
+          this.boost.translateZ(100);
 
-        //randomly place in a lane
-        var lane = Math.floor(Math.random() * 2); //0-2
-        switch (lane) {
-          case 0:
-            this.boost.translateX(41);
-            break;
-          case 1:
-            this.boost.translateX(-41);
-            break;
-          default:
-            break;
-        }
+          //randomly place in a lane
+          var lane = Math.floor(Math.random() * 2); //0-2
+          switch (lane) {
+            case 0:
+              this.boost.translateX(41);
+              break;
+            case 1:
+              this.boost.translateX(-41);
+              break;
+            default:
+              break;
+          }
 
-        this.scene.add(this.boost);
+          this.scene.add(this.boost);
 
-        requestAnimationFrame(() => this.moveGasCan());
-      },
-      (xhr) => {
-        // called while loading is progressing
-        console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
-      },
-      (error) => {
-        // called when loading has errors
-        console.error('An error happened', error);
-      },
-    );
+          requestAnimationFrame(() => this.moveGasCan());
+        },
+        (xhr) => {
+          // called while loading is progressing
+          console.log(`${(xhr.loaded / xhr.total * 100)}% loaded`);
+        },
+        (error) => {
+          // called when loading has errors
+          console.error('An error happened', error);
+        },
+      );
+    }
   }
 
   moveGasCan() {
@@ -469,8 +467,8 @@ export default class App {
     if (this.boost.position.z < 230) {
       this.boost.translateZ(.7);
       this.boost.translateY(-0.15);
-      if(this.boost.position.x > 0) { this.boost.translateX(-.08); }
-      else { this.boost.translateX(.08);}
+      if (this.boost.position.x > 0) { this.boost.translateX(-.08); }
+      else { this.boost.translateX(.08); }
     }
 
     else {
@@ -593,6 +591,7 @@ export default class App {
   //placing tree on the right side of the road
   placeTreeRight() {
     this.myTreeR = new Tree();
+    this.myTreeR.name = 'rightTree'; 
     this.myTreeR.translateZ(-300);
     this.myTreeR.translateX(70);
     this.myTreeR.translateY(20);
@@ -603,6 +602,7 @@ export default class App {
 
   placeTreeLeft() {
     this.myTreeL = new Tree();
+    this.myTreeL.name = 'leftTree'; 
     this.myTreeL.translateZ(-300);
     this.myTreeL.translateX(-70);
     this.myTreeL.translateY(20);
@@ -616,8 +616,8 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    if(this.myTreeL.position.z === 200) {
-      this.placeTreeLeft(); 
+    if (this.myTreeL.position.z === 200) {
+      this.placeTreeLeft();
     }
 
     if (this.myTreeL.position.z < 300) { //when tree is on right side
@@ -626,7 +626,7 @@ export default class App {
       this.myTreeL.translateX(0.062);
       //this.placeTreeLeft(); 
     }
-    else{
+    else {
       cancelAnimationFrame(() => this.handleTreeMovementLeft());
       this.scene.remove(this.myTreeL);
     }
@@ -638,8 +638,8 @@ export default class App {
     this.renderer.render(this.scene, this.camera);
     this.tracker.update();
 
-    if(this.myTreeR.position.z === 200) {
-      this.placeTreeRight(); 
+    if (this.myTreeR.position.z === 200) {
+      this.placeTreeRight();
     }
 
     if (this.myTreeR.position.z < 300) { //when tree is on right side
@@ -647,8 +647,8 @@ export default class App {
       this.myTreeR.translateY(-0.075);
       this.myTreeR.translateX(-0.062);
     }
-    
-    else{
+
+    else {
       cancelAnimationFrame(() => this.handleTreeMovementRight());
       this.scene.remove(this.myTreeR);
     }
@@ -691,47 +691,32 @@ export default class App {
   }
 
   //appear objects at random. 
-  appearRandomObject() {
-    var random = Math.floor(Math.random() * 11); //0-10
+  randomObject(temp = 0) {
+    var random = Math.floor(Math.random() * 5); //0-4
+    var ran = Math.floor(Math.random() * 2); // 0-1 (two options)
 
-    switch (random) {
-      case 0: //deer
-        this.placeTreeLeft();
-        this.handleTreeMovementLeft();
-        break;
-      case 1: //tree
-
-        break;
-      case 2: //car
-
-        break;
-      case 3: //pooping dog
-
-        break;
-      case 4: //deer
-
-        break;
-      case 5: //tree
-
-        break;
-      case 6: //pooping dog
-
-        break;
-      case 7: //car
-
-        break;
-      case 8: //tree
-
-        break;
-      case 9: //pooping dog
-        break;
-      case 10: //gas can
-        break;
-      default:
-        break;
+    if (temp === 50) {
+      console.log(random);
+      time = 0;
+      switch (random) {
+        case 0: //deer
+          if(!this.scene.getObjectByName('leftDeer')) { if (ran === 0) { this.loadDeerLeft(); } }
+          if(!this.scene.getObjectByName('rightDeer')) { if(ran === 1) { this.loadDeerRight(); } }
+          break;
+        case 1: //tree
+          if(!this.scene.getObjectByName('leftTree')) { if (ran === 0) { this.placeTreeLeft(); } }
+          if(!this.scene.getObjectByName('rightTree')) { if(ran === 1) { this.placeTreeRight(); } }
+          break;
+        case 2: //dog
+          if(!this.scene.getObjectByName('dog')) { this.loadPoopingDog(); }
+          break;
+        case 3: //pooping dog
+          if(!this.scene.getObjectByName('gascan')) { this.loadGasCan(ran); }
+          break;
+        default:
+          break;
+      }
     }
-
-    requestAnimationFrame(() => this.appearRandomObject());
   }
 
   // Collision Detection
