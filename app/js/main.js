@@ -9,6 +9,7 @@ const second = 30;
 
 export default class App {
   constructor() {
+    this.onArrowPressed(); 
     const c = document.getElementById('mycanvas');
     // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({
@@ -78,38 +79,32 @@ export default class App {
   }
 
   render() {
-    if (this.score == 100) {
-      alert("You win! Refresh the page to play again.");
-    } else {
-      this.renderer.render(this.scene, this.camera);
-      this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
-      this.onArrowPressed(); //moved key strokes to its own function for simplicity
-      this.randomObject(time);
-      time += 1;
-      if (time % second == 0) {
-        this.score += (1 * scoreMult);
-      }
-      var lblScore = document.getElementById('lblScore');
-      lblScore.innerHTML = this.score;
-    }
-
-    /*for (var i = 0; i < this.collidables.length - 1; i++) {
-      console.log(this.collidables[i]);
-    }*/
-
     if (this.detectCollisions(this.collidables) == true) {
       console.log("collision");
       this.gameOver();
     }
-
-    for (var i = 0; i < this.collidables.length; i++) {
-      var collidable = this.collidables[i];
-      if (this.carGroup.position.x == (collidable.position.x) &&
-        this.carGroup.position.z == (collidable.position.z)) {
-        console.log("collision");
-
+    else {
+      if (this.score == 100) {
+        alert("You win! Refresh the page to play again.");
       } else {
-        //console.log("no collision");
+        this.renderer.render(this.scene, this.camera);
+        this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
+        //this.onArrowPressed(); //moved key strokes to its own function for simplicity
+        this.randomObject(time);
+        time += 1;
+        if (time % second == 0) {
+          this.score += (1 * scoreMult);
+        }
+        var lblScore = document.getElementById('lblScore');
+        lblScore.innerHTML = this.score;
+      }
+
+      for (var i = 0; i < this.collidables.length; i++) {
+        var collidable = this.collidables[i];
+        if (this.carGroup.position.x == (collidable.position.x) &&
+          this.carGroup.position.z == (collidable.position.z)) {
+          console.log("collision");
+        }
       }
     }
 
@@ -277,6 +272,7 @@ export default class App {
 
   //this.rotateRandomCarWheels();
   randomCarRender() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
     this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
 
@@ -289,6 +285,7 @@ export default class App {
     }
 
     requestAnimationFrame(() => this.randomCarRender());
+  }
   }
 
   //loads in the pooping dog (lmao)
@@ -333,6 +330,7 @@ export default class App {
   }
 
   poopingDogTranslation() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.dog.position.z < 300) {
@@ -343,8 +341,8 @@ export default class App {
       cancelAnimationFrame(() => this.poopingDogTranslation());
     }
 
-
     requestAnimationFrame(() => this.poopingDogTranslation());
+  }
   }
 
   //loads the whitetail buck
@@ -380,6 +378,7 @@ export default class App {
 
   //render function to make deer move across road
   moveDeerRight() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.deerR.position.z < 230) {
@@ -390,7 +389,9 @@ export default class App {
       cancelAnimationFrame(() => this.moveDeerRight());
       this.scene.remove(this.deerR);
     }
+
     requestAnimationFrame(() => this.moveDeerRight());
+  }
   }
 
   //loads the whitetail buck
@@ -424,6 +425,7 @@ export default class App {
 
   //render function to make deer move across road
   moveDeerLeft() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.deerL.position.z < 230) {
@@ -436,6 +438,7 @@ export default class App {
     }
 
     requestAnimationFrame(() => this.moveDeerLeft());
+  }
   }
 
   //loads gas can (boost?)
@@ -481,6 +484,7 @@ export default class App {
   }
 
   moveGasCan() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.boost.position.z < 230) {
@@ -497,6 +501,7 @@ export default class App {
     }
 
     requestAnimationFrame(() => this.moveGasCan());
+  }
   }
 
   //called when left key is pressed, turns tires left
@@ -635,6 +640,7 @@ export default class App {
 
   //handling tree movement
   handleTreeMovementLeft() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.myTreeL.position.z === 200) {
@@ -651,10 +657,13 @@ export default class App {
       this.scene.remove(this.myTreeL);
     }
 
+
     requestAnimationFrame(() => this.handleTreeMovementLeft());
+  }
   }
 
   handleTreeMovementRight() {
+    if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
     if (this.myTreeR.position.z === 200) {
@@ -671,6 +680,7 @@ export default class App {
     }
 
     requestAnimationFrame(() => this.handleTreeMovementRight());
+  }
   }
 
   createGrass() {
