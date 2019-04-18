@@ -333,7 +333,7 @@ export default class App {
     if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
-    if (this.dog.position.z < 300) {
+    if (this.dog.position.z < 220) {
       this.dog.translateZ(2);
       this.dog.translateY(-0.09);
     } else {
@@ -381,7 +381,7 @@ export default class App {
     if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
-    if (this.deerR.position.z < 230) {
+    if (this.deerR.position.z < 220) {
       this.deerR.translateX(-0.6);
       this.deerR.translateZ(.7);
       this.deerR.translateY(-0.04);
@@ -428,7 +428,7 @@ export default class App {
     if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
-    if (this.deerL.position.z < 230) {
+    if (this.deerL.position.z < 220) {
       this.deerL.translateX(-0.6);
       this.deerL.translateZ(.35);
       this.deerL.translateY(-0.04);
@@ -448,7 +448,7 @@ export default class App {
         'app/js/models/OldJerryCan/scene.gltf',
         (gltf) => {
           // called when the resource is loaded
-          //gltf.scene.scale.set(5,5,5);
+          gltf.scene.scale.set(2,2,2);
           this.boost = gltf.scene;
           this.boost.name = 'gascan';
           this.boost.translateZ(100);
@@ -487,7 +487,7 @@ export default class App {
     if (this.detectCollisions(this.collidables) != true) {
     this.renderer.render(this.scene, this.camera);
 
-    if (this.boost.position.z < 230) {
+    if (this.boost.position.z < 220) {
       this.boost.translateZ(.7);
       this.boost.translateY(-0.15);
       if (this.boost.position.x > 0) {
@@ -647,7 +647,7 @@ export default class App {
       this.placeTreeLeft();
     }
 
-    if (this.myTreeL.position.z < 300) { //when tree is on right side
+    if (this.myTreeL.position.z < 220) { //when tree is on right side
       this.myTreeL.translateZ(1);
       this.myTreeL.translateY(-0.075);
       this.myTreeL.translateX(0.062);
@@ -670,7 +670,7 @@ export default class App {
       this.placeTreeRight();
     }
 
-    if (this.myTreeR.position.z < 300) { //when tree is on right side
+    if (this.myTreeR.position.z < 220) { //when tree is on right side
       this.myTreeR.translateZ(1);
       this.myTreeR.translateY(-0.075);
       this.myTreeR.translateX(-0.062);
@@ -722,7 +722,7 @@ export default class App {
     var random = Math.floor(Math.random() * 5); //0-4
     var ran = Math.floor(Math.random() * 2); // 0-1 (two options)
 
-    if (temp === 50) {
+    if (temp === 30) {
       console.log(random);
       time = 0;
       switch (random) {
