@@ -2,13 +2,13 @@
 var path = require('path');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var ROOT_PATH     = path.resolve(__dirname);
-var ENTRY_PATH    = path.resolve(ROOT_PATH, 'app/js/index.js');
+var ROOT_PATH = path.resolve(__dirname);
+var ENTRY_PATH = path.resolve(ROOT_PATH, 'app/js/index.js');
 //var SRC_PATH      = path.resolve(ROOT_PATH, 'app');
-var JS_PATH       = path.resolve(ROOT_PATH, 'app/js');
+var JS_PATH = path.resolve(ROOT_PATH, 'app/js');
 var TEMPLATE_PATH = path.resolve(ROOT_PATH, 'app/index.html');
 // var SHADER_PATH   = path.resolve(ROOT_PATH, 'src/shaders');
-var BUILD_PATH    = path.resolve(ROOT_PATH, 'dist');
+var BUILD_PATH = path.resolve(ROOT_PATH, 'dist');
 
 // set debug to true if we are not in production environment
 var debug = process.env.NODE_ENV !== 'production';
@@ -42,6 +42,25 @@ module.exports = {
         //   cacheDirectory: true
         // }
       },
+      {
+        test: /\.(gltf)$/,
+        use: [
+          {
+            loader: "gltf-webpack-loader"
+          }
+        ]
+      },
+      {
+        test: /\.(bin|png|jpg|jpeg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {}
+          }
+        ]
+      }
+
+
       // {
       //   test: /\.glsl$/,
       //   include: SHADER_PATH,

@@ -19,6 +19,7 @@
     "webpack-dev-server": "~3.2.1"
   },
   "dependencies": {
+    "gltf-webpack-loader": "^1.0.6",
     "three": "~0.102.1",
     "three-gltf-loader": "^1.103.0",
     "three-obj-loader": "^1.1.3",

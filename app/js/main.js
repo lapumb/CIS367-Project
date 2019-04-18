@@ -3,7 +3,7 @@ import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
-//import Buck from './models/Buck/scene.gltf';
+//import Buck from '..///models/Buck/scene.gltf';
 //import GasCan from './models/OldJerryCan/scene.gltf'; 
 //import Dog from './models/PoopingDog/scene.gltf'; 
 
@@ -271,7 +271,7 @@ export default class App {
   //loads in the pooping dog (lmao)
   loadPoopingDog() {
     this.loader.load(
-      'app/js/models/PoopingDog/scene.gltf',
+      './app/js/models/PoopingDog/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
         gltf.scene.scale.set(5, 5, 5);
@@ -328,7 +328,7 @@ export default class App {
   //loads the whitetail buck
   loadDeerRight() {
     this.loader.load(
-      'app/js/models/Buck/scene.gltf',
+      './app/js/models/Buck/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
         // must translate the 3d here, when it is loaded (at least that's all I know how to do it)
@@ -377,7 +377,7 @@ export default class App {
   //loads the whitetail buck
   loadDeerLeft() {
     this.loader.load(
-      'app/js/models/Buck/scene.gltf',
+      './app/js/models/Buck/scene.gltf',
       (gltf) => {
         // called when the resource is loaded
         gltf.scene.scale.set(.3, .3, .3);
@@ -425,7 +425,7 @@ export default class App {
   loadGasCan(temp = 0) {
     if (temp === 0) {
       this.loader.load(
-        'app/js/models/OldJerryCan/scene.gltf',
+        './app/js/models/OldJerryCan/scene.gltf',
         (gltf) => {
           // called when the resource is loaded
           //gltf.scene.scale.set(5,5,5);
