@@ -3,13 +3,17 @@ import Car from './models/Car.js';
 import Wheel from './models/Wheel.js';
 import Tree from './models/Tree.js';
 import GLTFLoader from 'three-gltf-loader';
+//import Buck from './models/Buck/scene.gltf';
+//import GasCan from './models/OldJerryCan/scene.gltf'; 
+//import Dog from './models/PoopingDog/scene.gltf'; 
+
 var time = 0;
 var scoreMult = 1; //multiplier for gas tank, change to .5 so everything slows down
 const second = 30;
 
 export default class App {
   constructor() {
-    this.onArrowPressed(); 
+    this.onArrowPressed();
     const c = document.getElementById('mycanvas');
     // Enable antialias for smoother lines
     this.renderer = new THREE.WebGLRenderer({
@@ -49,29 +53,15 @@ export default class App {
     const lightOne = new THREE.DirectionalLight(0xFFFFFF, 1.0);
     lightOne.position.set(10, 40, 100);
     this.scene.add(lightOne);
-    /*
-        const lightTwo = new THREE.DirectionalLight(0xFFFFFF, 1.0);
-        lightTwo.position.set(-10, -40, -100);
-        this.scene.add(lightTwo);*/
 
     this.createUserCar();
     this.createRoad();
     this.createGrass();
-    //this.loadGasCan();
     this.createRandomCar();
-    //this.loadDeerLeft();
-    //this.loadDeerRight();
-    //this.loadPoopingDog();
-    //this.placeTreeLeft();
-    //this.placeTreeRight();
-
-    //this.axesHelper = new THREE.AxesHelper(100);
-    //this.scene.add(this.axesHelper);
 
     window.addEventListener('resize', () => this.resizeHandler());
     this.resizeHandler();
     requestAnimationFrame(() => this.render());
-    //requestAnimationFrame(() => this.appearRandomObject());
   }
 
   gameOver() {
@@ -88,8 +78,7 @@ export default class App {
         alert("You win! Refresh the page to play again.");
       } else {
         this.renderer.render(this.scene, this.camera);
-        this.rotateUserWheels(); //I do not know why rotating and arrow keys do not work at same time
-        //this.onArrowPressed(); //moved key strokes to its own function for simplicity
+        this.rotateUserWheels();
         this.randomObject(time);
         time += 1;
         if (time % second == 0) {
@@ -129,7 +118,6 @@ export default class App {
   createUserCar() {
     //adding body
     this.myCar = new Car();
-    //this.scene.add(this.myCar);
     // changed this to true, it would'nt let me move or
     // rotate the car when it was false
     this.myCar.matrixAutoUpdate = true;
@@ -139,32 +127,24 @@ export default class App {
     this.frtire.translateX(8);
     this.frtire.translateY(-5);
     this.frtire.translateZ(4);
-    //this.scene.add(this.frtire);
-    //this.frtire.matrixAutoUpdate = false;
 
     //front left tire
     this.fltire = new Wheel(8);
     this.fltire.translateX(8);
     this.fltire.translateY(-5);
     this.fltire.translateZ(-4);
-    //this.scene.add(this.fltire);
-    //this.fltire.matrixAutoUpdate = false;
 
     //back right tire
     this.brtire = new Wheel(8);
     this.brtire.translateX(-3);
     this.brtire.translateY(-5);
     this.brtire.translateZ(-4);
-    //this.scene.add(this.brtire);
-    //this.brtire.matrixAutoUpdate = false;
 
     //back right tire
     this.bltire = new Wheel(8);
     this.bltire.translateX(-3);
     this.bltire.translateY(-5);
     this.bltire.translateZ(4);
-    //this.scene.add(this.bltire);
-    //this.bltire.matrixAutoUpdate = false;
 
     //added all car elements to a group so we can
     //move them all together with ease
@@ -273,19 +253,19 @@ export default class App {
   //this.rotateRandomCarWheels();
   randomCarRender() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
-    this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
+      this.renderer.render(this.scene, this.camera);
+      this.rotateRandomCarWheels(); //I do not know why rotating and arrow keys do not work at same time
 
-    if (this.rancarGroup.position.z < 300) {
-      this.rancarGroup.translateX(-1);
-      this.rancarGroup.translateY(-0.066);
-    } else {
-      this.scene.remove(this.rancarGroup);
-      this.createRandomCar();
+      if (this.rancarGroup.position.z < 300) {
+        this.rancarGroup.translateX(-1);
+        this.rancarGroup.translateY(-0.066);
+      } else {
+        this.scene.remove(this.rancarGroup);
+        this.createRandomCar();
+      }
+
+      requestAnimationFrame(() => this.randomCarRender());
     }
-
-    requestAnimationFrame(() => this.randomCarRender());
-  }
   }
 
   //loads in the pooping dog (lmao)
@@ -331,18 +311,18 @@ export default class App {
 
   poopingDogTranslation() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.dog.position.z < 220) {
-      this.dog.translateZ(2);
-      this.dog.translateY(-0.09);
-    } else {
-      this.scene.remove(this.dog);
-      cancelAnimationFrame(() => this.poopingDogTranslation());
+      if (this.dog.position.z < 300) {
+        this.dog.translateZ(2);
+        this.dog.translateY(-0.09);
+      } else {
+        this.scene.remove(this.dog);
+        cancelAnimationFrame(() => this.poopingDogTranslation());
+      }
+
+      requestAnimationFrame(() => this.poopingDogTranslation());
     }
-
-    requestAnimationFrame(() => this.poopingDogTranslation());
-  }
   }
 
   //loads the whitetail buck
@@ -379,19 +359,19 @@ export default class App {
   //render function to make deer move across road
   moveDeerRight() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.deerR.position.z < 220) {
-      this.deerR.translateX(-0.6);
-      this.deerR.translateZ(.7);
-      this.deerR.translateY(-0.04);
-    } else {
-      cancelAnimationFrame(() => this.moveDeerRight());
-      this.scene.remove(this.deerR);
+      if (this.deerR.position.z < 230) {
+        this.deerR.translateX(-0.6);
+        this.deerR.translateZ(.7);
+        this.deerR.translateY(-0.04);
+      } else {
+        cancelAnimationFrame(() => this.moveDeerRight());
+        this.scene.remove(this.deerR);
+      }
+
+      requestAnimationFrame(() => this.moveDeerRight());
     }
-
-    requestAnimationFrame(() => this.moveDeerRight());
-  }
   }
 
   //loads the whitetail buck
@@ -426,19 +406,19 @@ export default class App {
   //render function to make deer move across road
   moveDeerLeft() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.deerL.position.z < 220) {
-      this.deerL.translateX(-0.6);
-      this.deerL.translateZ(.35);
-      this.deerL.translateY(-0.04);
-    } else {
-      cancelAnimationFrame(() => this.moveDeerLeft());
-      this.scene.remove(this.deerL);
+      if (this.deerL.position.z < 230) {
+        this.deerL.translateX(-0.6);
+        this.deerL.translateZ(.35);
+        this.deerL.translateY(-0.04);
+      } else {
+        cancelAnimationFrame(() => this.moveDeerLeft());
+        this.scene.remove(this.deerL);
+      }
+
+      requestAnimationFrame(() => this.moveDeerLeft());
     }
-
-    requestAnimationFrame(() => this.moveDeerLeft());
-  }
   }
 
   //loads gas can (boost?)
@@ -448,7 +428,7 @@ export default class App {
         'app/js/models/OldJerryCan/scene.gltf',
         (gltf) => {
           // called when the resource is loaded
-          gltf.scene.scale.set(2,2,2);
+          //gltf.scene.scale.set(5,5,5);
           this.boost = gltf.scene;
           this.boost.name = 'gascan';
           this.boost.translateZ(100);
@@ -485,23 +465,23 @@ export default class App {
 
   moveGasCan() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.boost.position.z < 220) {
-      this.boost.translateZ(.7);
-      this.boost.translateY(-0.15);
-      if (this.boost.position.x > 0) {
-        this.boost.translateX(-.08);
+      if (this.boost.position.z < 230) {
+        this.boost.translateZ(.7);
+        this.boost.translateY(-0.15);
+        if (this.boost.position.x > 0) {
+          this.boost.translateX(-.08);
+        } else {
+          this.boost.translateX(.08);
+        }
       } else {
-        this.boost.translateX(.08);
+        this.scene.remove(this.boost);
+        cancelAnimationFrame(() => this.moveGasCan());
       }
-    } else {
-      this.scene.remove(this.boost);
-      cancelAnimationFrame(() => this.moveGasCan());
-    }
 
-    requestAnimationFrame(() => this.moveGasCan());
-  }
+      requestAnimationFrame(() => this.moveGasCan());
+    }
   }
 
   //called when left key is pressed, turns tires left
@@ -641,46 +621,46 @@ export default class App {
   //handling tree movement
   handleTreeMovementLeft() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.myTreeL.position.z === 200) {
-      this.placeTreeLeft();
+      if (this.myTreeL.position.z === 200) {
+        this.placeTreeLeft();
+      }
+
+      if (this.myTreeL.position.z < 300) { //when tree is on right side
+        this.myTreeL.translateZ(1);
+        this.myTreeL.translateY(-0.075);
+        this.myTreeL.translateX(0.062);
+        //this.placeTreeLeft();
+      } else {
+        cancelAnimationFrame(() => this.handleTreeMovementLeft());
+        this.scene.remove(this.myTreeL);
+      }
+
+
+      requestAnimationFrame(() => this.handleTreeMovementLeft());
     }
-
-    if (this.myTreeL.position.z < 220) { //when tree is on right side
-      this.myTreeL.translateZ(1);
-      this.myTreeL.translateY(-0.075);
-      this.myTreeL.translateX(0.062);
-      //this.placeTreeLeft();
-    } else {
-      cancelAnimationFrame(() => this.handleTreeMovementLeft());
-      this.scene.remove(this.myTreeL);
-    }
-
-
-    requestAnimationFrame(() => this.handleTreeMovementLeft());
-  }
   }
 
   handleTreeMovementRight() {
     if (this.detectCollisions(this.collidables) != true) {
-    this.renderer.render(this.scene, this.camera);
+      this.renderer.render(this.scene, this.camera);
 
-    if (this.myTreeR.position.z === 200) {
-      this.placeTreeRight();
+      if (this.myTreeR.position.z === 200) {
+        this.placeTreeRight();
+      }
+
+      if (this.myTreeR.position.z < 300) { //when tree is on right side
+        this.myTreeR.translateZ(1);
+        this.myTreeR.translateY(-0.075);
+        this.myTreeR.translateX(-0.062);
+      } else {
+        cancelAnimationFrame(() => this.handleTreeMovementRight());
+        this.scene.remove(this.myTreeR);
+      }
+
+      requestAnimationFrame(() => this.handleTreeMovementRight());
     }
-
-    if (this.myTreeR.position.z < 220) { //when tree is on right side
-      this.myTreeR.translateZ(1);
-      this.myTreeR.translateY(-0.075);
-      this.myTreeR.translateX(-0.062);
-    } else {
-      cancelAnimationFrame(() => this.handleTreeMovementRight());
-      this.scene.remove(this.myTreeR);
-    }
-
-    requestAnimationFrame(() => this.handleTreeMovementRight());
-  }
   }
 
   createGrass() {
@@ -755,7 +735,7 @@ export default class App {
             this.loadPoopingDog();
           }
           break;
-        case 3: //pooping dog
+        case 3: //gas can
           if (!this.scene.getObjectByName('gascan')) {
             this.loadGasCan(ran);
           }
